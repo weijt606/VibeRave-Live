@@ -7,7 +7,7 @@ the API under `services/api/` and the scripts under `scripts/`) is free
 software: you can redistribute it and/or modify it under the terms of the
 GNU Affero General Public License, version 3 or (at your option) any later
 version. See [LICENSE](LICENSE). Source:
-<https://github.com/weijt606/-VibeRave-Live>.
+<https://github.com/weijt606/VibeRave-Live>.
 
 It is a modified version of [Strudel](https://codeberg.org/uzu/strudel)
 (© Strudel contributors, AGPL-3.0-or-later). The packages in `packages/`

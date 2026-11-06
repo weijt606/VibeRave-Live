@@ -132,7 +132,7 @@ export function resetHealthCache() {
  */
 export const SOURCE_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_SOURCE_URL) ||
-  'https://github.com/weijt606/-VibeRave-Live';
+  'https://github.com/weijt606/VibeRave-Live';
 
 /** Sound + software credits (CONTRACTS.md §20) — what the licences ask us to show. */
 export const CREDITS = [

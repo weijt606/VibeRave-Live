@@ -1,0 +1,512 @@
+/* The big screen in the Hardstock design language (docs/booth/CONTRACTS.md
+   §42, theme night-yellow).
+
+   Same layout, same code wall, same wave and interactions as the glow skin
+   (stage.astro); only the paint changes, scoped under
+   `.vb-stage[data-skin='hardstock']`:
+
+   - warm black canvas, one warm-white ink that draws every border, every
+     shadow and every piece of text; exactly one accent (yellow);
+   - every grouped or interactive element in a 2 px ink border, casting a
+     zero-blur offset shadow; square corners everywhere;
+   - Space Grotesk for headings and big numbers, Space Mono for labels,
+     badges and anything machine-adjacent; body copy stays the booth's sans;
+   - motion is displacement: a press moves the element 2 px toward the
+     page while its shadow shrinks; nothing blurs, scales or springs;
+   - text on the accent fill is ink-dark, never grey or white. */
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/space/SpaceGrotesk-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space/SpaceGrotesk-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space/SpaceMono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space/SpaceMono-700.woff2') format('woff2');
+}
+
+.vb-stage[data-skin='hardstock'] {
+  /* tokens — night-yellow */
+  /* §42.1 rave palette: the Hardstock grammar (ink borders, zero-blur
+     offset shadows, square corners) in club colours — a violet-black
+     canvas, cool white ink, acid green as the one lead accent, and the
+     offset shadows printed in hot magenta like a misregistered flyer. */
+  --hs-canvas: #07060d;
+  --hs-ink: #f1efff;
+  --hs-raised: #110e1f;
+  --hs-high: #1b1631;
+  --hs-muted: #9a93bd;
+  --hs-accent: #c6ff1a;
+  --hs-hot: #ff2bd6;
+  --hs-cold: #20e3ff;
+  --hs-on-fill: #07060d;
+  --hs-shadow-c: var(--hs-hot);
+  --hs-shadow-sm: 3px 3px 0 var(--hs-shadow-c);
+  --hs-shadow-md: 5px 5px 0 var(--hs-shadow-c);
+  --hs-shadow-lg: 8px 8px 0 var(--hs-shadow-c);
+  /* the stage's own tokens, re-pointed */
+  --st-display: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  --st-mono: 'Space Mono', 'JetBrains Mono', monospace;
+  --st-ink: var(--hs-ink);
+  --st-ink-2: #d9d4f5;
+  --st-cap: var(--hs-muted);
+  --st-navy: var(--hs-on-fill);
+  --st-card: var(--hs-raised);
+  --st-gold: var(--hs-accent);
+  --st-lilac: var(--hs-cold);
+  --st-rose: var(--hs-hot);
+  --st-coral: var(--hs-accent);
+  --st-amber: var(--hs-accent);
+  /* read by the canvases (wave, pose) */
+  --st-wave: var(--hs-accent);
+  --st-pose: var(--hs-accent);
+  background: var(--hs-canvas);
+  color: var(--hs-ink);
+}
+
+/* ── canvas: no gradient, no scanlines; the code wall stays ──────────── */
+.vb-stage[data-skin='hardstock'] .st-sky {
+  background:
+    linear-gradient(rgba(198, 255, 26, 0.035) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(90deg, rgba(198, 255, 26, 0.035) 1px, transparent 1px) 0 0 / 64px 64px,
+    var(--hs-canvas);
+  animation: none;
+  transform: none;
+}
+.vb-stage[data-skin='hardstock'] .st-scan {
+  display: none;
+}
+.vb-stage[data-skin='hardstock'] .st-codefield {
+  opacity: 0.2;
+  color: var(--hs-muted);
+}
+
+/* ── square corners, everywhere ─────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] *,
+.vb-stage[data-skin='hardstock'] *::before,
+.vb-stage[data-skin='hardstock'] *::after {
+  border-radius: 0 !important;
+  text-shadow: none;
+}
+
+/* ── header ─────────────────────────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .st-brand {
+  font-family: var(--st-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.vb-stage[data-skin='hardstock'] .st-ailabel {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.vb-stage[data-skin='hardstock'] .st-mode {
+  border: 2px solid var(--hs-ink);
+  background: var(--hs-raised);
+  color: var(--hs-ink);
+  box-shadow: var(--hs-shadow-sm);
+  font-family: var(--st-display);
+  transition:
+    transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vb-stage[data-skin='hardstock'] .st-mode.is-gesture {
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+}
+.vb-stage[data-skin='hardstock'] .st-mode:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--hs-shadow-c);
+}
+.vb-stage[data-skin='hardstock'] .st-mode-sub {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.6em;
+  color: inherit;
+  opacity: 0.8;
+}
+
+/* ── the pill: a stamped card ───────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .st-pill {
+  background: var(--hs-raised);
+  color: var(--hs-ink);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-lg);
+  transition:
+    transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vb-stage[data-skin='hardstock'] .st-pill:active,
+.vb-stage[data-skin='hardstock'] .st-pill.is-holding {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--hs-shadow-c);
+}
+.vb-stage[data-skin='hardstock'] .st-pill-mic {
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-sm);
+}
+.vb-stage[data-skin='hardstock'] .st-pill-text,
+.vb-stage[data-skin='hardstock'] .st-pill-live-text {
+  font-family: var(--st-display);
+  font-weight: 700;
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .st-pill.is-attract {
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+}
+.vb-stage[data-skin='hardstock'] .st-pill.is-attract .st-pill-text {
+  color: var(--hs-on-fill);
+}
+.vb-stage[data-skin='hardstock'] .st-pill.is-attract .st-pill-mic {
+  background: var(--hs-raised);
+  color: var(--hs-ink);
+}
+
+/* ── text column ────────────────────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .st-status,
+.vb-stage[data-skin='hardstock'] .st-explain,
+.vb-stage[data-skin='hardstock'] .st-howto {
+  color: var(--st-ink-2);
+}
+.vb-stage[data-skin='hardstock'] .st-howto b {
+  color: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-typer-hint,
+.vb-stage[data-skin='hardstock'] .st-turnline,
+.vb-stage[data-skin='hardstock'] .st-cap {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .st-now-style {
+  font-family: var(--st-display);
+  font-weight: 700;
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .st-now-bpm {
+  font-family: var(--st-mono);
+  color: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-turn-clock {
+  font-family: var(--st-display);
+  color: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-turn-count,
+.vb-stage[data-skin='hardstock'] .st-turn-next {
+  font-family: var(--st-mono);
+  color: var(--st-ink-2);
+}
+
+/* ── chips, cards, panels: bordered blocks, never nested glass ──────── */
+.vb-stage[data-skin='hardstock'] .st-gesture-chip,
+.vb-stage[data-skin='hardstock'] .st-gx-shape,
+.vb-stage[data-skin='hardstock'] .gm-crowd,
+.vb-stage[data-skin='hardstock'] .st-ctl-panel {
+  background: var(--hs-raised);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-sm);
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .st-gesture-chip b,
+.vb-stage[data-skin='hardstock'] .st-gx-shape b {
+  color: var(--hs-ink);
+  font-family: var(--st-display);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-shape span,
+.vb-stage[data-skin='hardstock'] .st-gesture-chip span {
+  font-family: var(--st-mono);
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-shape.is-holding,
+.vb-stage[data-skin='hardstock'] .st-gx-shape.is-fired {
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--hs-shadow-c);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-shape.is-holding b,
+.vb-stage[data-skin='hardstock'] .st-gx-shape.is-holding span,
+.vb-stage[data-skin='hardstock'] .st-gx-shape.is-fired b,
+.vb-stage[data-skin='hardstock'] .st-gx-shape.is-fired span {
+  color: var(--hs-on-fill);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-cam {
+  background: var(--hs-raised);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-lg);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-line {
+  font-family: var(--st-mono);
+  background: var(--hs-ink);
+  color: var(--hs-canvas);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.vb-stage[data-skin='hardstock'] .st-gx-bar {
+  background: var(--hs-high);
+  border: 1px solid var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-bar > span,
+.vb-stage[data-skin='hardstock'] .st-gx-bar i {
+  background: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-dial-head,
+.vb-stage[data-skin='hardstock'] .st-gx-privacy {
+  font-family: var(--st-mono);
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .st-gx-toast {
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-md);
+  font-family: var(--st-display);
+}
+
+/* ── code card ──────────────────────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .st-cc {
+  background: var(--hs-raised);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-lg);
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .st-cc-head {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--hs-muted);
+  border-bottom: 2px solid var(--hs-ink);
+  padding-bottom: 12px;
+}
+.vb-stage[data-skin='hardstock'] .st-cc-status.is-live {
+  color: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-cc-dot {
+  background: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-cc-line.is-changed {
+  border-left: 4px solid var(--hs-accent);
+  background: var(--hs-high);
+}
+/* club syntax: strings acid, methods cyan, numbers magenta */
+.vb-stage[data-skin='hardstock'] .tk-method {
+  color: var(--hs-cold);
+}
+.vb-stage[data-skin='hardstock'] .tk-num {
+  color: var(--hs-hot);
+}
+.vb-stage[data-skin='hardstock'] .tk-comment {
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .st-cc-caret {
+  background: var(--hs-accent);
+}
+
+/* ── the keyboard field ─────────────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .st-typer {
+  background: var(--hs-raised);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-lg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.vb-stage[data-skin='hardstock'] .st-typer-cap {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  color: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-typer-input {
+  font-family: var(--st-display);
+  color: var(--hs-ink);
+  caret-color: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .st-typer-input::placeholder {
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .st-typer-key,
+.vb-stage[data-skin='hardstock'] .st-typer-sent {
+  font-family: var(--st-mono);
+  color: var(--hs-muted);
+}
+
+/* ── the set report ─────────────────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .gm-st-result {
+  background: var(--hs-raised);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-lg);
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .gm-st-result .gm-report {
+  animation: none;
+}
+.vb-stage[data-skin='hardstock'] .gm-report-cap,
+.vb-stage[data-skin='hardstock'] .gm-stat-k,
+.vb-stage[data-skin='hardstock'] .gm-title-dj {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .gm-score-num {
+  color: var(--hs-accent);
+  text-shadow: 6px 6px 0 var(--hs-hot);
+}
+.vb-stage[data-skin='hardstock'] .gm-rank {
+  color: var(--hs-ink);
+  font-family: var(--st-display);
+}
+.vb-stage[data-skin='hardstock'] .gm-title {
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-sm);
+}
+.vb-stage[data-skin='hardstock'] .gm-title-dj {
+  color: var(--hs-on-fill);
+}
+.vb-stage[data-skin='hardstock'] .gm-eq span {
+  background: var(--hs-accent);
+  animation: none;
+  transform: none;
+}
+.vb-stage[data-skin='hardstock'] .gm-seal {
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-sm);
+  background: var(--hs-high);
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .gm-badge {
+  animation: none;
+}
+.vb-stage[data-skin='hardstock'] .gm-badge-label {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  font-size: 0.8em;
+}
+.vb-stage[data-skin='hardstock'] .gm-st-last {
+  background: var(--hs-raised);
+  border: 2px solid var(--hs-ink);
+  border-radius: 0;
+  box-shadow: var(--hs-shadow-sm);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .gm-st-last-score b {
+  color: var(--hs-accent);
+  text-shadow: none;
+}
+.vb-stage[data-skin='hardstock'] .gm-st-last-line.is-title {
+  color: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .gm-st-last-score span,
+.vb-stage[data-skin='hardstock'] .gm-st-last-line,
+.vb-stage[data-skin='hardstock'] .gm-st-last .gm-badge-label {
+  color: var(--hs-ink);
+}
+.vb-stage[data-skin='hardstock'] .gm-meter,
+.vb-stage[data-skin='hardstock'] .gm-bar {
+  background: var(--hs-high);
+  border: 1px solid var(--hs-ink);
+  height: 6px;
+}
+.vb-stage[data-skin='hardstock'] .gm-meter > span,
+.vb-stage[data-skin='hardstock'] .gm-bar > span {
+  background: var(--hs-accent);
+}
+.vb-stage[data-skin='hardstock'] .gm-qr path {
+  fill: var(--hs-on-fill);
+}
+.vb-stage[data-skin='hardstock'] .gm-qr {
+  background: #fff;
+  border: 2px solid var(--hs-ink);
+}
+
+/* ── attract ────────────────────────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .st-title {
+  font-family: var(--st-display);
+  font-weight: 700;
+  color: var(--hs-ink);
+  text-shadow:
+    -5px -4px 0 var(--hs-cold),
+    9px 8px 0 var(--hs-hot);
+}
+.vb-stage[data-skin='hardstock'] .st-slogan {
+  color: var(--st-ink-2);
+}
+.vb-stage[data-skin='hardstock'] .st-slogan-en {
+  font-family: var(--st-display);
+  color: var(--hs-cold);
+}
+
+/* ── stage settings + footer ────────────────────────────────────────── */
+.vb-stage[data-skin='hardstock'] .st-ctl-gear {
+  background: var(--hs-raised);
+  border: 2px solid var(--hs-ink);
+  color: var(--hs-ink);
+  box-shadow: var(--hs-shadow-sm);
+}
+.vb-stage[data-skin='hardstock'] .st-ctl-cap {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .st-orient-btn {
+  color: var(--hs-ink);
+  font-family: var(--st-display);
+  border: 2px solid transparent;
+}
+.vb-stage[data-skin='hardstock'] .st-orient-btn.is-on {
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+  border-color: var(--hs-ink);
+  box-shadow: var(--hs-shadow-sm);
+}
+.vb-stage[data-skin='hardstock'] .st-foot {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 22px;
+  color: var(--hs-muted);
+}
+.vb-stage[data-skin='hardstock'] .st-foot-right {
+  color: var(--hs-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vb-stage[data-skin='hardstock'] .st-mode,
+  .vb-stage[data-skin='hardstock'] .st-pill {
+    transition: none;
+  }
+}
+
+.vb-stage[data-skin='hardstock'] .gm-comment {
+  color: var(--hs-ink);
+}
+
+.vb-stage[data-skin='hardstock'] .st-tip {
+  border-radius: 0;
+  background: var(--hs-accent);
+  color: var(--hs-on-fill);
+  border: 2px solid var(--hs-ink);
+  box-shadow: var(--hs-shadow-lg);
+}

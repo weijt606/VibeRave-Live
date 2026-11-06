@@ -1,0 +1,377 @@
+import { useState } from 'react';
+import {
+  useSettings,
+  LLM_PRESETS,
+  STT_PRESETS,
+  setLlmApiKey,
+  setLlmBaseUrl,
+  setLlmModel,
+  setLlmTemperature,
+  setSttApiKey,
+  setSttBaseUrl,
+  setSttModel,
+  setVibeBilingual,
+  switchLlmPreset,
+  switchSttPreset,
+} from '../../../settings.mjs';
+import { API_URL } from './vibe/vibeApi.mjs';
+
+// API Settings — let users plug in any LLM / STT provider without
+// touching the backend .env. Settings live in localStorage and travel
+// with every API call as override headers; the backend never persists
+// them. See services/api/src/interface/http/override-headers.mjs.
+
+function Field({ label, hint, children }) {
+  return (
+    <label className="flex flex-col gap-1 text-xs">
+      <span className="opacity-70 font-mono">{label}</span>
+      {children}
+      {hint ? <span className="opacity-50 leading-snug">{hint}</span> : null}
+    </label>
+  );
+}
+
+function TextInput({ value, onChange, type = 'text', placeholder }) {
+  return (
+    <input
+      type={type}
+      value={value || ''}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      spellCheck={false}
+      autoCapitalize="off"
+      autoCorrect="off"
+      className="bg-background border border-muted rounded px-2 py-1 text-sm font-mono text-foreground focus:outline-none focus:border-foreground"
+    />
+  );
+}
+
+function Section({ title, subtitle, children }) {
+  return (
+    <section className="border border-muted rounded-md p-3 space-y-3 bg-background/40">
+      <header>
+        <div className="text-sm font-semibold">{title}</div>
+        {subtitle ? <div className="text-xs opacity-60 mt-0.5">{subtitle}</div> : null}
+      </header>
+      {children}
+    </section>
+  );
+}
+
+function Pill({ active, onClick, children, title }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className={
+        'px-2 py-1 text-xs rounded-full border transition-colors ' +
+        (active
+          ? 'border-foreground text-foreground bg-foreground/10'
+          : 'border-muted text-foreground/70 hover:border-foreground/50')
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
+// Build the override headers from current settings — same shape vibeApi
+// uses on every /generate and /transcribe call. Reused here so the test
+// buttons exercise the EXACT same configuration the live calls do.
+function llmHeaders(s) {
+  const h = {};
+  if (s.llmProvider) h['x-llm-provider'] = s.llmProvider;
+  if (s.llmApiKey) h['x-llm-api-key'] = s.llmApiKey;
+  if (s.llmBaseUrl) h['x-llm-base-url'] = s.llmBaseUrl;
+  if (s.llmModel) h['x-llm-model'] = s.llmModel;
+  if (typeof s.llmTemperature === 'number')
+    h['x-llm-temperature'] = String(s.llmTemperature);
+  return h;
+}
+function sttHeaders(s) {
+  const h = {};
+  if (s.sttProvider) h['x-stt-provider'] = s.sttProvider;
+  if (s.sttApiKey) h['x-stt-api-key'] = s.sttApiKey;
+  if (s.sttBaseUrl) h['x-stt-base-url'] = s.sttBaseUrl;
+  if (s.sttModel) h['x-stt-model'] = s.sttModel;
+  return h;
+}
+
+function TestButton({ label, status, onClick }) {
+  return (
+    <div className="flex items-center gap-2 mt-1">
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={status?.kind === 'pending'}
+        className="px-3 py-1 rounded border border-foreground text-foreground text-xs hover:opacity-80 disabled:opacity-50"
+      >
+        {status?.kind === 'pending' ? `Testing ${label}…` : `Test ${label}`}
+      </button>
+      {status?.kind === 'ok' && (
+        <span className="text-xs text-foreground" title={status.detail || ''}>
+          ✓ {status.ms} ms{status.model ? ` · ${status.model}` : ''}
+        </span>
+      )}
+      {status?.kind === 'error' && (
+        <span
+          className="text-xs text-red-400 break-all max-w-prose"
+          title={status.error}
+        >
+          ✗ {status.ms ? `${status.ms} ms · ` : ''}
+          {status.error}
+        </span>
+      )}
+    </div>
+  );
+}
+
+export function ApiSettingsTab() {
+  const settings = useSettings();
+  const [llmTest, setLlmTest] = useState(null);
+  const [sttTest, setSttTest] = useState(null);
+
+  // switchLlmPreset / switchSttPreset (from settings.mjs) snapshot the
+  // current fields under the previously-active preset, then restore the
+  // saved fields for the new preset (or fall back to preset defaults
+  // if the user has never visited it before). This is what makes
+  // "Qwen → Ollama → Qwen" preserve the originally-typed Qwen key.
+  function applyLlmPreset(preset) {
+    switchLlmPreset(preset);
+  }
+  function applySttPreset(preset) {
+    switchSttPreset(preset);
+  }
+
+  // Run a backend health-test endpoint with the current override headers
+  // and update the matching test-status state. Each test pushes a tiny
+  // round-trip through the full provider stack so success means the
+  // user's keys + URL + model name actually work for live calls.
+  async function runTest(kind) {
+    const setStatus = kind === 'llm' ? setLlmTest : setSttTest;
+    const path = kind === 'llm' ? '/health/test-llm' : '/health/test-stt';
+    const headers = kind === 'llm' ? llmHeaders(settings) : sttHeaders(settings);
+    setStatus({ kind: 'pending' });
+    try {
+      const res = await fetch(`${API_URL}${path}`, { method: 'GET', headers });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        setStatus({
+          kind: 'error',
+          ms: data?.ms,
+          error: data?.error || `HTTP ${res.status}`,
+        });
+        return;
+      }
+      setStatus({
+        kind: 'ok',
+        ms: data.ms,
+        model: data.model,
+        detail: data.sample ? `sample: "${data.sample}"` : undefined,
+      });
+    } catch (err) {
+      setStatus({ kind: 'error', error: `Could not reach API (${err.message})` });
+    }
+  }
+
+  return (
+    <div className="h-full overflow-auto p-4 space-y-4 text-foreground">
+      <div className="space-y-1">
+        <h2 className="text-base font-semibold">API Settings</h2>
+        <p className="text-xs opacity-60 leading-relaxed max-w-prose">
+          Configure the LLM (used by every prompt — voice, text, or chip click)
+          and the speech-to-text backend (used only when you push-to-talk; text
+          input bypasses STT entirely). Keys are stored in your browser only —
+          never persisted on the server, never shared. Leave any field blank to
+          fall back to the server&apos;s environment defaults.
+        </p>
+      </div>
+
+      <Section
+        title="Language Model"
+        subtitle="Used for code generation. Any OpenAI-compatible endpoint works."
+      >
+        <div className="flex flex-wrap gap-1.5">
+          {LLM_PRESETS.map((p) => (
+            <Pill
+              key={p.id}
+              active={settings.llmActivePreset === p.id}
+              onClick={() => applyLlmPreset(p)}
+              title={`${p.label} — ${p.baseUrl}`}
+            >
+              {p.label}
+            </Pill>
+          ))}
+        </div>
+
+        <Field label="API key" hint={
+          settings.llmProvider === 'ollama'
+            ? 'Ollama is local — no key required.'
+            : 'Stored locally in your browser.'
+        }>
+          <TextInput
+            type="password"
+            value={settings.llmApiKey}
+            onChange={setLlmApiKey}
+            placeholder={settings.llmProvider === 'ollama' ? '(not needed)' : 'sk-...'}
+          />
+        </Field>
+
+        <Field label="Base URL">
+          <TextInput
+            value={settings.llmBaseUrl}
+            onChange={setLlmBaseUrl}
+            placeholder="https://api.openai.com/v1"
+          />
+        </Field>
+
+        <Field label="Model">
+          <TextInput
+            value={settings.llmModel}
+            onChange={setLlmModel}
+            placeholder="gpt-4o-mini"
+          />
+        </Field>
+
+        <Field
+          label={`Temperature: ${settings.llmTemperature}`}
+          hint="0 = deterministic, 1 = creative. 0.85 is a good default for music."
+        >
+          <input
+            type="range"
+            min={0}
+            max={1.5}
+            step={0.05}
+            value={settings.llmTemperature}
+            onChange={(e) => setLlmTemperature(e.target.value)}
+            className="w-full"
+          />
+        </Field>
+
+        <TestButton label="LLM" status={llmTest} onClick={() => runTest('llm')} />
+      </Section>
+
+      <Section
+        title="Speech-to-Text"
+        subtitle="Pick a local engine for privacy + offline use, or a cloud API for accuracy."
+      >
+        <div className="flex flex-wrap gap-1.5">
+          {STT_PRESETS.map((p) => (
+            <Pill
+              key={p.id}
+              active={settings.sttActivePreset === p.id}
+              onClick={() => applySttPreset(p)}
+            >
+              {p.label}
+            </Pill>
+          ))}
+        </div>
+
+        <label className="flex items-start gap-2 text-xs cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={!!settings.vibeBilingual}
+            onChange={(e) => setVibeBilingual(e.target.checked)}
+            className="mt-0.5 accent-foreground"
+          />
+          <span className="leading-snug">
+            <span className="font-semibold">Chinese-English mixed input · 中英混合输入</span>
+            <span className="opacity-60 block mt-0.5">
+              Off (default) optimises for English voice prompts. On lets you mix
+              English and Mandarin freely — backend uses bilingual bias prompts
+              and auto-detects language per utterance. For local Whisper, make
+              sure <code className="font-mono">WHISPER_MODEL</code> is a multilingual
+              variant (e.g. <code className="font-mono">base</code>, not
+              <code className="font-mono"> base.en</code>).
+            </span>
+          </span>
+        </label>
+
+        {(settings.sttProvider === 'api' || settings.sttProvider === 'dashscope') && (
+          <>
+            <Field label="API key" hint="Stored locally in your browser.">
+              <TextInput
+                type="password"
+                value={settings.sttApiKey}
+                onChange={setSttApiKey}
+                placeholder="sk-..."
+              />
+            </Field>
+            <Field label="Base URL">
+              <TextInput
+                value={settings.sttBaseUrl}
+                onChange={setSttBaseUrl}
+                placeholder={
+                  settings.sttProvider === 'dashscope'
+                    ? 'https://dashscope-intl.aliyuncs.com'
+                    : 'https://api.openai.com/v1'
+                }
+              />
+            </Field>
+            <Field label="Model">
+              <TextInput
+                value={settings.sttModel}
+                onChange={setSttModel}
+                placeholder={
+                  settings.sttProvider === 'dashscope' ? 'qwen3-asr-flash' : 'whisper-1'
+                }
+              />
+            </Field>
+          </>
+        )}
+
+        {settings.sttProvider === 'whisper' && (
+          <p className="text-xs opacity-60 leading-snug">
+            Local <code className="font-mono">smart-whisper</code> — model auto-downloads on
+            first use into <code className="font-mono">services/api/models/whisper/</code>.
+            Configure the model size via <code className="font-mono">WHISPER_MODEL</code> in <code className="font-mono">.env</code>.
+          </p>
+        )}
+
+        {settings.sttProvider === 'vosk' && (
+          <p className="text-xs opacity-60 leading-snug">
+            Local closed-grammar VOSK — only recognises canonical phrases listed in
+            <code className="font-mono"> services/api/src/infrastructure/vosk-transcriber.mjs</code>.
+            Sub-15&nbsp;ms latency. Download a model first; see <code className="font-mono">services/api/README.md</code>.
+          </p>
+        )}
+
+        {settings.sttProvider === 'api' && (
+          <p className="text-xs opacity-50 leading-snug border-l-2 border-muted pl-2">
+            Any endpoint that implements OpenAI&apos;s <code className="font-mono">/audio/transcriptions</code> shape
+            works out of the box (OpenAI Whisper, Groq Whisper, self-hosted
+            whisper.cpp servers, etc.). For DashScope ASR (paraformer / fun-asr) use the
+            <em> Qwen (DashScope native)</em> preset instead — DashScope&apos;s OpenAI-compat shim
+            doesn&apos;t carry audio.
+          </p>
+        )}
+
+        {settings.sttProvider === 'dashscope' && (
+          <p className="text-xs opacity-50 leading-snug border-l-2 border-muted pl-2">
+            Native DashScope ASR adapter — targets the multimodal-generation
+            endpoint with inline base64 audio (not the OpenAI-compat shim).
+            <br />
+            <strong>Works:</strong> <code className="font-mono">qwen3-asr-flash</code>{' '}
+            (recommended, sync), <code className="font-mono">qwen-audio-asr</code>.
+            <br />
+            <strong>Doesn&apos;t work over this adapter:</strong>{' '}
+            <code className="font-mono">qwen3-asr-flash-realtime</code> /{' '}
+            <code className="font-mono">fun-asr-realtime</code> (WebSocket streaming),{' '}
+            <code className="font-mono">paraformer-v2</code> /{' '}
+            <code className="font-mono">fun-asr</code> (different endpoint{' '}
+            <code className="font-mono">audio/asr/transcription</code> with async task polling).
+          </p>
+        )}
+
+        <TestButton label="STT" status={sttTest} onClick={() => runTest('stt')} />
+      </Section>
+
+      <p className="text-xs opacity-50 leading-relaxed pt-2">
+        These settings travel with each request as <code className="font-mono">x-llm-*</code> /
+        <code className="font-mono"> x-stt-*</code> headers. The backend forwards the key to
+        your chosen provider but never persists it.
+      </p>
+    </div>
+  );
+}

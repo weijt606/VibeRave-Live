@@ -1,0 +1,38 @@
+---
+// /gesture — the camera page (CONTRACTS.md §11.4, §15). Runs on whatever
+// laptop has the webcam pointed at the booth. When the room has no console
+// it becomes one itself (§15.1), so it needs the same shell /booth has:
+// HeadCommon brings the codemirror theme + index.css for the (hidden) track
+// editors, booth-controls.css the transport styling. The viewport and the
+// camera meta stay as they were.
+import HeadCommon from '../components/HeadCommon.astro';
+import '../styles/booth-theme.css';
+import '../styles/compliance.css';
+import '../styles/booth-controls.css';
+import { GestureApp } from '../booth/gesture/GestureApp.jsx';
+---
+
+<html lang="zh-CN" class="m-0 dark" data-phase="night" data-mode="adult">
+  <head>
+    <HeadCommon />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#04061A" />
+    <meta name="robots" content="noindex" />
+    <title>VibeRave · Gesture</title>
+    <link rel="stylesheet" href="/fonts/booth/booth-fonts.css" />
+  </head>
+  <body class="m-0">
+    <GestureApp client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--vb-bg-0, #04061a);
+    overscroll-behavior: none;
+  }
+</style>

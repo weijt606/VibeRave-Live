@@ -1,0 +1,38 @@
+{
+  "name": "@viberave/api",
+  "license": "AGPL-3.0-or-later",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "VibeRave API \u2014 multimodal (voice + text) input \u2192 Strudel code generation. Pluggable LLM (any OpenAI-compatible endpoint or Ollama) and STT (whisper / vosk local, or any OpenAI-compatible /audio/transcriptions endpoint, plus DashScope native).",
+  "main": "src/index.mjs",
+  "scripts": {
+    "dev": "node --env-file=../../.env --watch src/index.mjs",
+    "start": "node --env-file=../../.env src/index.mjs",
+    "pregenerate": "node --env-file=../../.env scripts/pregenerate.mjs",
+    "pregenerate:dry": "node scripts/pregenerate.mjs --dry-run",
+    "test": "cd ../.. && npx vitest run services/api",
+    "llm-smoke": "node --env-file=../../.env scripts/llm-smoke.mjs",
+    "detail-report": "node scripts/detail-report.mjs",
+    "build-library": "node scripts/build-library.mjs",
+    "check-take": "node scripts/check-take.mjs"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.2",
+    "@fastify/websocket": "^11.3.0",
+    "@strudel/core": "workspace:*",
+    "@strudel/draw": "workspace:*",
+    "@strudel/mini": "workspace:*",
+    "@strudel/tonal": "workspace:*",
+    "@strudel/transpiler": "workspace:*",
+    "fastify": "^5.2.1",
+    "openai": "^6.34.0",
+    "smart-whisper": "^0.8.1",
+    "undici": "^8.11.2",
+    "vosk-koffi": "^1.1.1",
+    "wavefile": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=20.6.0"
+  }
+}

@@ -1,0 +1,38 @@
+---
+// /booth — iPad console. Same shell pattern as embed.astro: HeadCommon brings the
+// codemirror theme + index.css so the grafted CodePanel renders; booth-theme.css
+// supplies the booth tokens. Audio runs on the same track editors as `/`.
+import HeadCommon from '../components/HeadCommon.astro';
+import '../styles/booth-theme.css';
+import '../styles/compliance.css';
+import '../styles/game.css';
+import '../styles/booth-controls.css';
+import { BoothConsole } from '../booth/BoothConsole.jsx';
+---
+
+<html lang="zh-CN" class="m-0 dark" data-phase="night" data-mode="adult">
+  <head>
+    <HeadCommon />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#03051A" />
+    <meta name="robots" content="noindex" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>VibeRave · Booth</title>
+    <link rel="stylesheet" href="/fonts/booth/booth-fonts.css" />
+  </head>
+  <body class="m-0">
+    <BoothConsole client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--vb-bg-0, #03051a);
+    overscroll-behavior: none;
+  }
+</style>

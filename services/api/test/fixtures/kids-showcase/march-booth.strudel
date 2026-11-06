@@ -1,0 +1,36 @@
+setcps(112/60/4)
+arrange(
+  // intro: the drum corps marches in, quietly
+  [4, stack(
+    s("bassdrum1*4").gain("0.5 0.35 0.45 0.35"),
+    s("~ snare_modern ~ snare_modern").gain(0.35).lastOf(4, x => x.ply(2)),
+    s("snare_low*8?").gain(0.2).pan(sine.range(0.3, 0.7).slow(4))
+  )],
+  // march: brass tune; bass and pad gently duck under the bass drum
+  [8, stack(
+    s("bassdrum1*4").gain("0.5 0.35 0.45 0.35").duckorbit(1).duckdepth(0.35).duckattack(0.1),
+    s("~ snare_modern ~ snare_modern").gain(0.35).lastOf(4, x => x.ply(2)),
+    note("<[g4 g4 g4 c5] [~ e5 d5 c5] [d5 e5 ~ g5] [~ ~ ~ ~]>")
+      .s("gm_brass_section").gain("0.65 0.5 0.55 0.6").attack(0.02).release(0.2),
+    note("<c2 g2 a2 g2>").s("gm_acoustic_bass").gain(0.45).attack(0.02).orbit(1),
+    note("<[e5 ~ g5 ~] [c5 ~ e5 ~]>").s("glockenspiel").gain(0.3).pan("<0.3 0.7>")
+      .room(0.35).orbit(2)
+  )],
+  // trio: flute takes the tune, the drums step back to a tap
+  [4, stack(
+    s("bassdrum1 ~ bassdrum1 ~").gain(0.4),
+    note("<[e5 e5 e5 a5] [~ c6 b5 a5] [b5 c6 ~ e6] [~ ~ ~ ~]>")
+      .s("gm_flute").gain(0.5).attack(0.04).release(0.3).off(1/8, x => x.gain(0.2).pan(0.8)),
+    note("<a2 e2 f2 g2>").s("gm_acoustic_bass").gain(0.4).attack(0.02)
+      .lpf(sine.range(900, 2500).slow(8))
+  )],
+  // finale: back to full, a run on the snare every fourth bar
+  [8, stack(
+    s("bassdrum1*4").gain("0.55 0.35 0.45 0.35").duckorbit(1).duckdepth(0.35).duckattack(0.1),
+    s("~ snare_modern ~ snare_modern").gain(0.4).lastOf(4, x => x.fast(2)).swingBy(0.05, 4),
+    note("<[g4 g4 g4 c5] [~ e5 d5 c5] [d5 e5 ~ g5] [~ ~ ~ ~]>")
+      .s("gm_brass_section").gain("0.65 0.5 0.55 0.6").attack(0.02).release(0.2),
+    note("<c2 g2 a2 g2>").s("gm_acoustic_bass").gain(0.45).attack(0.02).orbit(1),
+    note("<[e5 ~ g5 ~] [c5 ~ e5 ~]>").s("glockenspiel").gain(0.3).pan("<0.3 0.7>").orbit(2)
+  )]
+)

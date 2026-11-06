@@ -1,0 +1,137 @@
+/* /pro typography + layout polish. Loaded after booth-theme.css; overrides only. */
+
+/* Buttons and pads never wrap their label. */
+.vb-pro .vb-btn,
+.vb-pro .vb-pad,
+.vb-pro .vb-mini,
+.vb-pro .vb-toggle button {
+  white-space: nowrap;
+}
+
+/* FX pads in one row of six so nothing hides below the fold. */
+.vb-padgrid-fx {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.vb-pad-fx .vb-pad-sub {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+/* The small deck ring: "按住说话" must fit on one line. */
+.vb-pro-sun .vb-sunbtn-label {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.vb-pro-sun .vb-sunbtn-sub {
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+/* Deck header meta (key · bpm) and cue sub-labels: mono caps, never clipped. */
+.vb-deck-meta,
+.vb-pad-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Compact vertical rhythm for iPad-height screens: everything a DJ reaches
+   for (rows · AI line · cues · loop · FX) stays on screen without scrolling. */
+@media (max-height: 900px) {
+  .vb-deck {
+    gap: 8px;
+    padding: 10px 16px 14px;
+  }
+  .vb-deck-wave {
+    height: 56px;
+  }
+  .vb-deck-row {
+    height: 40px;
+  }
+  .vb-deck-ai {
+    margin-top: 2px;
+  }
+  .vb-pro-sun {
+    width: 96px;
+    height: 64px;
+  }
+  .vb-padrow-head {
+    margin-top: 0;
+  }
+  .vb-pad {
+    min-height: 44px;
+    gap: 1px;
+    border-radius: 10px;
+  }
+  .vb-pad-n {
+    font-size: 15px;
+  }
+  .vb-pad-sub {
+    font-size: 8.5px;
+  }
+}
+
+/* Mixer strip labels: keep the mono caps but give them breathing room. */
+.vb-mixer .vb-cap {
+  white-space: nowrap;
+}
+
+/* The deck ring (§13): the booth's stacking — scope canvas with the label
+   under it — applies unchanged, it only has to fit the 96×64 slot. */
+.vb-pro-sun .vb-sunbtn {
+  width: 52px;
+  height: 52px;
+}
+.vb-pro-sun .vb-sunbtn-label {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+@media (max-height: 900px) {
+  .vb-pro-sun .vb-sunbtn {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Wordmark in the pro top bar: keep clear of the BPM readout */
+.vb-pro .vb-wordmark {
+  margin-right: 28px;
+}
+.vb-pro .vb-wordmark {
+  --brand-cap: 11px;
+}
+@media (max-width: 1280px) {
+  .vb-pro .vb-wordmark {
+    --brand-cap: 10px;
+  }
+  .vb-pro .vb-wordmark {
+    gap: 12px;
+    margin-right: 16px;
+  }
+}
+
+/* Top bar at 1440 and below: the dark/light switch is icon-only and the
+   limiter meter drops its caption, so the tempo cluster and the right
+   cluster never overlap. */
+.vb-pro .vb-phase-toggle {
+  padding: 0 10px;
+}
+.vb-pro .vb-phase-toggle .vb-phase-toggle-text {
+  display: none;
+}
+@media (max-width: 1520px) {
+  .vb-pro-top {
+    gap: 16px;
+  }
+  .vb-pro-tempo {
+    gap: 14px;
+  }
+  .vb-reduction .vb-cap {
+    display: none;
+  }
+  .vb-reduction-track {
+    width: 64px;
+  }
+}

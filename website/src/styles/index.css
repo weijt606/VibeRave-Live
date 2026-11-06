@@ -1,0 +1,200 @@
+@font-face {
+  font-family: 'PressStart';
+  src: url('/fonts/PressStart2P/PressStart2P-Regular.ttf');
+  size-adjust: 65%;
+}
+@font-face {
+  font-family: 'BigBlueTerminal';
+  src: url('/fonts/BigBlueTerminal/BigBlue_TerminalPlus.TTF');
+}
+@font-face {
+  font-family: 'x3270';
+  src: url('/fonts/3270/3270-Regular.ttf');
+}
+@font-face {
+  font-family: 'JetBrains';
+  src: url('/fonts/JetBrains/JetBrainsMono.woff2');
+}
+@font-face {
+  font-family: 'Monocraft';
+  src: url('/fonts/Monocraft/Monocraft.ttf');
+  size-adjust: 90%;
+}
+@font-face {
+  font-family: 'Hack';
+  src: url('/fonts/Hack/Hack-Regular.ttf');
+}
+@font-face {
+  font-family: 'we-come-in-peace';
+  src: url('/fonts/we-come-in-peace/we-come-in-peace-bb.regular.ttf');
+}
+@font-face {
+  font-family: 'FiraCode';
+  src: url('/fonts/FiraCode/FiraCode-Regular.ttf');
+}
+@font-face {
+  font-family: 'FiraCode-SemiBold';
+  src: url('/fonts/FiraCode/FiraCode-SemiBold.ttf');
+}
+@font-face {
+  font-family: 'teletext';
+  src: url('/fonts/teletext/EuropeanTeletext.ttf');
+  size-adjust: 90%;
+}
+@font-face {
+  font-family: 'tic80';
+  src: url('/fonts/tic80/tic-80-wide-font.otf');
+  size-adjust: 60%;
+}
+
+.prose > h1:not(:first-child) {
+  margin-top: 30px;
+}
+:root {
+  --app-height: 100vh;
+  --app-width: 100vw;
+  /* VibeRave brand accents. Hard-coded magenta/cyan that match the README
+     badges and the .vr-logo chromatic-aberration effect — these are the
+     project's visual identity. Pulled into custom properties so a future
+     theme override (or a "tone it down" toggle) can swap them in one place
+     instead of grep-replacing across components. The `*-rgb` form is the
+     space-separated channel triple, used inside `rgb(... / <alpha>)`. */
+  --vr-accent-cyan: #22d3ee;
+  --vr-accent-cyan-rgb: 34 211 238;
+  --vr-accent-magenta: #ec4899;
+  --vr-accent-magenta-rgb: 236 72 153;
+  /* "Deep" / dark variants of the brand accents — same hue family, lower
+     saturation/lightness. For UI elements that should read as branded
+     but quieter than the neon primary tone (level meters, secondary
+     accents). Approx. cyan-700 / pink-700 in Tailwind. */
+  --vr-accent-cyan-deep: #0e7490;
+  --vr-accent-cyan-deep-rgb: 14 116 144;
+  --vr-accent-magenta-deep: #be185d;
+  --vr-accent-magenta-deep-rgb: 190 24 93;
+}
+
+#console-tab {
+  font-family: BigBlueTerminal, monospace;
+}
+
+/* === Vibe Rave logo — hardcore techno styling === */
+/* Used by Panel.jsx header. Kept here so the keyframes / shadow stack
+   are easy to tune without going through React. */
+.vr-logo {
+  font-family: PressStart, JetBrains, monospace;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  color: #ffffff;
+  position: relative;
+  display: inline-block;
+  padding: 0 0.15em;
+  text-shadow:
+    /* chromatic aberration: text duplicated with hot pink to the left, cyan to the right */
+    -2px 0 0 #ec4899,
+     2px 0 0 #22d3ee,
+    /* tight magenta neon core */
+     0 0 4px rgba(236, 72, 153, 1),
+     0 0 10px rgba(236, 72, 153, 0.85),
+    /* wider cyan halo */
+     0 0 22px rgba(34, 211, 238, 0.55),
+    /* hard industrial drop */
+     0 2px 0 rgba(0, 0, 0, 0.85);
+  animation: vr-flicker 5s steps(1, end) infinite;
+}
+/* Hazard-tape underline scan-line that sits under the logo */
+.vr-logo::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -3px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #ec4899 15%,
+    #22d3ee 50%,
+    #ec4899 85%,
+    transparent 100%
+  );
+  opacity: 0.7;
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
+}
+/* Power-failure flicker — most of the time stable, brief drop-out
+   moments to evoke a malfunctioning club LED sign. */
+@keyframes vr-flicker {
+   0%,  3%, 100% {
+    opacity: 1;
+    text-shadow:
+      -2px 0 0 #ec4899,  2px 0 0 #22d3ee,
+       0 0 4px rgba(236, 72, 153, 1),
+       0 0 10px rgba(236, 72, 153, 0.85),
+       0 0 22px rgba(34, 211, 238, 0.55),
+       0 2px 0 rgba(0, 0, 0, 0.85);
+  }
+   3.2%, 3.6% {
+    opacity: 0.4;
+    text-shadow:
+      -3px 0 0 #ec4899,  3px 0 0 #22d3ee,
+       0 0 2px rgba(236, 72, 153, 0.5);
+  }
+  17%, 17.8% {
+    opacity: 0.7;
+    text-shadow:
+      -1px 0 0 #ec4899,  1px 0 0 #22d3ee,
+       0 0 2px rgba(236, 72, 153, 0.4);
+  }
+}
+
+/* Smaller version chip next to the logo: stencil bracket */
+.vr-version {
+  font-family: JetBrains, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: #22d3ee;
+  opacity: 0.6;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: rgba(34, 211, 238, 0.05);
+  text-transform: uppercase;
+}
+
+/* Strudel's @strudel/draw library lazily creates a fullscreen canvas
+   (#test-canvas) on document.body — position:fixed, 100vw × 100vh —
+   and uses it as the default ctx for .pianoroll() / .draw() /
+   .animate(). Any LLM-generated pattern that calls those would paint
+   on top of the entire viewport, including over the left tracks
+   column and the right Vibe panel.
+
+   Hiding it forces all visualisation through the per-track canvases
+   in TrackVisualizer.jsx (which are scoped and don't overflow). The
+   skill prompts in services/api/src/skills/strudel/rules/output-format.md
+   already tell the LLM not to emit .pianoroll() / .scope(), so the
+   only loss is when a model ignores that rule — and the per-track
+   pianoroll painter (selectable from the per-track viz dropdown)
+   covers that case anyway. */
+/* === LLM line-flash ===
+   Brief cyan wash + left edge accent on `.cm-line` nodes that changed
+   between the previous editor state and an LLM-applied snapshot. The
+   accent border distinguishes our flash from Strudel's per-event playback
+   highlights (which use inline mini-highlight decorations on a fully
+   different visual layer). Triggered from applyCodeToSelectedTrack via
+   flashChangedLines() — pure CSS animation so we don't have to coordinate
+   cleanup timing in JS. */
+@keyframes vr-line-flash-fade {
+  0% {
+    background-color: rgb(var(--vr-accent-cyan-rgb) / 0.55);
+    box-shadow: inset 3px 0 0 0 var(--vr-accent-cyan);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: inset 3px 0 0 0 transparent;
+  }
+}
+.vr-line-flash {
+  animation: vr-line-flash-fade 1.2s ease-out;
+}
+
+canvas#test-canvas {
+  display: none !important;
+}

@@ -1,0 +1,652 @@
+/* Game layer (docs/booth/CONTRACTS.md §21.5): turn countdown, set report,
+   badges, crowd meter. Hairlines and type only — one warm accent (the first track
+   colour on the console, --st-a-warm on the stage), no filled buttons. */
+
+/* ── shared ─────────────────────────────────────────────────────────── */
+.gm-bar,
+.gm-meter {
+  position: relative;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--vb-hair);
+  overflow: hidden;
+}
+.gm-bar > span,
+.gm-meter > span {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: currentColor;
+  transition: transform 0.25s linear;
+}
+.gm-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+}
+.gm-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.gm-seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  box-shadow:
+    0 0 0 4px transparent,
+    0 0 0 5px color-mix(in srgb, currentColor 30%, transparent);
+  font-size: 22px;
+  font-weight: 400;
+}
+.gm-badge-label {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+.gm-badge-lg .gm-seal {
+  width: 112px;
+  height: 112px;
+  font-size: 46px;
+  box-shadow:
+    0 0 0 8px transparent,
+    0 0 0 9px color-mix(in srgb, currentColor 30%, transparent),
+    0 0 40px color-mix(in srgb, currentColor 25%, transparent);
+}
+.gm-badge-lg .gm-badge-label {
+  font-size: 26px;
+}
+.gm-badge-sm .gm-seal {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+.gm-badge-sm .gm-badge-label {
+  font-size: 15px;
+}
+.gm-badge {
+  animation: gm-pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.gm-badge:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.gm-badge:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.gm-badge:nth-child(4) {
+  animation-delay: 0.45s;
+}
+@keyframes gm-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes gm-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gm-badge,
+  .gm-report,
+  .gm-eq span,
+  .gm-turn.is-warn .gm-clock,
+  .gm-st-turn.is-warn .gm-st-clock {
+    animation: none;
+  }
+}
+
+/* ── console (/booth) ───────────────────────────────────────────────── */
+.gm-turn {
+  position: absolute;
+  left: 36px;
+  top: 200px;
+  width: min(210px, 30%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2;
+  color: var(--vb-ink);
+}
+.gm-turn-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gm-clock {
+  font-family: var(--vb-display);
+  font-size: 26px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--vb-t1);
+}
+.gm-clock span {
+  font-family: var(--vb-body);
+  font-size: 11px;
+  margin-left: 3px;
+  color: var(--vb-cap);
+}
+.gm-turn .gm-bar {
+  color: var(--vb-t1);
+}
+.gm-turn.is-warn .gm-clock {
+  animation: gm-pulse 1s ease-in-out infinite;
+}
+.gm-turn-hint {
+  font-size: 12px;
+  color: var(--vb-ink-2);
+  opacity: 0.8;
+}
+.gm-result {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--vb-t1);
+  background: color-mix(in srgb, var(--vb-bg-0) 72%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* ── the set report (§21.7), shared by console (md) and stage (lg) ──── */
+.gm-report {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  max-width: 100%;
+  animation: gm-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+.gm-report-cap {
+  font-family: var(--vb-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.gm-score {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  line-height: 1;
+}
+.gm-score-num {
+  font-family: var(--vb-display);
+  font-size: 96px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 32px color-mix(in srgb, currentColor 35%, transparent);
+}
+.gm-score-unit {
+  font-size: 18px;
+  opacity: 0.8;
+}
+.gm-rank {
+  font-family: var(--vb-display);
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.gm-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+  font-size: 15px;
+  color: var(--vb-ink);
+}
+.gm-title-dj {
+  font-family: var(--vb-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  opacity: 0.7;
+}
+.gm-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 36px;
+  margin: 4px 0;
+}
+.gm-eq span {
+  width: 6px;
+  height: calc(var(--h, 0.5) * 100%);
+  border-radius: 3px;
+  background: currentColor;
+  opacity: 0.85;
+  transform-origin: bottom;
+  animation: gm-eq 0.9s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * -0.11s);
+}
+@keyframes gm-eq {
+  from {
+    transform: scaleY(0.35);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.gm-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+}
+.gm-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.gm-stat-v {
+  font-family: var(--vb-display);
+  font-size: 22px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--vb-ink);
+}
+.gm-stat-v small {
+  font-size: 11px;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+.gm-stat-k {
+  font-size: 11px;
+  opacity: 0.7;
+}
+.gm-report .gm-badges {
+  margin-top: 6px;
+  gap: 14px;
+}
+.gm-report .gm-badge-label {
+  color: var(--vb-ink);
+}
+.gm-report-sub {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--vb-ink-2);
+}
+/* §62: the verdict — a light meme line, the part people photograph */
+.gm-comment {
+  max-width: 100%;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--vb-ink);
+}
+.gm-next-now {
+  margin-top: 6px;
+}
+/* the console sits in a 700 px half: keep everything one screen tall */
+.gm-report-md .gm-score-num {
+  font-size: 84px;
+}
+/* kids: the instrument tiles sit top-right; the card stays left. */
+[data-mode='kids'] .gm-turn {
+  top: 210px;
+}
+
+/* ── stage (/stage, 1920×1080 design space) ─────────────────────────── */
+/* The stage page defines --st-gold / --st-card / --st-cap…; the game
+   layer's own accent and glass names resolve to them here. */
+.st-ui {
+  --st-a-warm: var(--st-gold, #8cf0cf);
+  --st-hair: rgba(255, 255, 255, 0.22);
+  --st-glass-top: rgba(23, 21, 74, 0.62);
+  --st-glass-bottom: rgba(23, 21, 74, 0.82);
+  --st-glass-edge: rgba(255, 255, 255, 0.14);
+}
+.gm-st-turn {
+  position: absolute;
+  left: 64px;
+  top: 380px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--st-ink);
+}
+.gm-st-clock {
+  font-family: var(--st-display);
+  font-size: 88px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--st-a-warm);
+}
+.gm-st-clock span {
+  font-family: var(--st-body);
+  font-size: 22px;
+  margin-left: 8px;
+  color: var(--st-cap);
+}
+.gm-st-turn .gm-bar {
+  color: var(--st-a-warm);
+  background: var(--st-hair);
+}
+.gm-st-turn.is-warn .gm-st-clock {
+  animation: gm-pulse 1s ease-in-out infinite;
+}
+/* §21.7: a card in the middle of the 1920×1080 (or 1080×1920) design
+   space, over both columns, above the music strip. */
+.gm-st-result {
+  position: absolute;
+  left: 50%;
+  top: 96px;
+  z-index: 5;
+  transform: translateX(-50%);
+  width: 980px;
+  max-width: calc(100% - 128px);
+  padding: 26px 56px 24px;
+  border-radius: 36px;
+  background: var(--st-card);
+  box-shadow:
+    0 30px 80px rgba(30, 15, 90, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  color: var(--st-gold);
+}
+.gm-st-result .gm-report {
+  gap: 8px;
+}
+.gm-st-result .gm-report-cap {
+  font-family: var(--st-mono);
+  font-size: 20px;
+  color: var(--st-cap);
+}
+.gm-st-result .gm-score-num {
+  font-family: var(--st-display);
+  font-size: 116px;
+  font-weight: 600;
+}
+.gm-st-result .gm-score-unit {
+  font-size: 34px;
+}
+.gm-st-result .gm-rank {
+  font-family: var(--st-display);
+  font-size: 44px;
+}
+.gm-st-result .gm-title {
+  padding: 12px 26px;
+  font-size: 30px;
+  color: var(--st-ink);
+}
+.gm-st-result .gm-title-dj {
+  font-family: var(--st-mono);
+  font-size: 20px;
+}
+.gm-st-result .gm-eq {
+  /* §62: the verdict line took its room — the card must clear the wave */
+  display: none;
+}
+.gm-st-result .gm-eq span {
+  width: 12px;
+  border-radius: 6px;
+}
+.gm-st-result .gm-stats {
+  gap: 12px 44px;
+}
+.gm-st-result .gm-stat-v {
+  font-family: var(--st-display);
+  font-size: 38px;
+  color: var(--st-ink);
+}
+.gm-st-result .gm-stat-v small {
+  font-size: 20px;
+}
+.gm-st-result .gm-stat-k {
+  font-size: 20px;
+  color: var(--st-cap);
+}
+.gm-st-result .gm-badges {
+  margin-top: 2px;
+  gap: 30px;
+}
+.gm-st-result .gm-seal {
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
+}
+.gm-st-result .gm-badge-label {
+  color: var(--st-ink);
+  font-size: 22px;
+}
+.gm-st-result .gm-report-sub {
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--st-ink-2);
+}
+.gm-st-result .gm-comment {
+  font-size: 34px;
+  color: var(--st-ink);
+}
+.is-portrait .gm-st-result {
+  width: 900px;
+  top: 420px;
+}
+.gm-st-last {
+  /* §55: a card in the right margin, clear of the centred pill (it used to
+     be one long right-aligned line that ran into the pill) */
+  /* placed by the stage's right-hand column (.st-attract-side) */
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 24px 24px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--st-glass-top), var(--st-glass-bottom));
+  border: 1px solid var(--st-glass-edge);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 18px 60px rgba(30, 10, 90, 0.28);
+  text-align: center;
+  color: var(--st-gold);
+}
+.gm-st-last .st-cap {
+  font-size: 24px;
+  letter-spacing: 0.3em;
+}
+/* portrait attract: the column is centred, so 上一位 joins its flow under
+   the how-to line instead of floating over the slogan or the pill */
+/* (portrait: the side column joins the centred flow) */
+.is-portrait .gm-st-last {
+  position: static;
+  margin-top: 28px;
+  width: auto;
+  min-width: 560px;
+  max-width: 820px;
+}
+.gm-st-last-score {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+}
+.gm-st-last-score b {
+  font-family: var(--st-display);
+  font-size: 104px;
+  font-weight: 700;
+  color: var(--st-gold);
+  text-shadow: 0 6px 30px rgba(110, 235, 195, 0.45);
+}
+.gm-st-last-score span {
+  font-size: 34px;
+  font-weight: 500;
+  color: var(--st-ink);
+}
+.gm-st-last-line {
+  max-width: 100%;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--st-ink);
+  overflow-wrap: anywhere;
+}
+.gm-st-last-line.is-comment {
+  font-size: 20px;
+  opacity: 0.85;
+}
+.gm-st-last-line.is-title {
+  margin-top: -4px;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--st-gold);
+}
+.gm-st-last .gm-badges {
+  margin-top: 8px;
+  gap: 12px;
+  justify-content: center;
+}
+.gm-st-last .gm-badge-label {
+  color: var(--st-ink);
+}
+.gm-crowd {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 20px 14px 14px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--st-glass-top), var(--st-glass-bottom));
+  border: 1px solid var(--st-glass-edge);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--st-a-warm);
+  transition: box-shadow 0.4s ease;
+}
+.gm-crowd.is-peak {
+  box-shadow: 0 0 48px color-mix(in srgb, var(--st-a-warm) 45%, transparent);
+}
+.gm-qr {
+  width: 84px;
+  height: 84px;
+  border-radius: 8px;
+  background: #f4f6f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.gm-crowd-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 220px;
+}
+.gm-crowd-title {
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--st-ink);
+}
+.gm-crowd .gm-meter {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--st-hair);
+}
+.st-attract-crowd {
+  position: absolute;
+  right: 64px;
+  bottom: 120px;
+}
+.st-attract-turnline {
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--st-ink-2);
+}
+
+/* ── audience page (/crowd) ─────────────────────────────────────────── */
+.gm-crowdpage {
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: var(--vb-ink);
+  background: var(--vb-bg-0);
+  font-family: var(--vb-body);
+  text-align: center;
+}
+.gm-crowdpage header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.gm-crowdpage h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 300;
+}
+.gm-tap {
+  position: relative;
+  width: min(72vw, 300px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--vb-t1);
+  background: transparent;
+  color: var(--vb-ink);
+  font: inherit;
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    0 0 0 10px transparent,
+    0 0 0 11px color-mix(in srgb, var(--vb-t1) 30%, transparent),
+    0 0 calc(20px + 60px * var(--lvl, 0)) color-mix(in srgb, var(--vb-t1) 40%, transparent);
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.25s ease;
+}
+.gm-tap:active {
+  transform: scale(0.96);
+}
+.gm-tap:disabled {
+  opacity: 0.4;
+}
+.gm-crowdpage .gm-meter {
+  width: min(80vw, 320px);
+  height: 4px;
+  color: var(--vb-t1);
+}
+.gm-crowdpage .gm-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.gm-crowdpage .gm-status {
+  font-size: 14px;
+  color: var(--vb-ink-2);
+  min-height: 1.4em;
+}
+.gm-crowdpage.is-peak .gm-tap {
+  animation: gm-pulse 0.5s ease-in-out 4;
+}

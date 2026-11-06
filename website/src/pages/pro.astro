@@ -1,0 +1,38 @@
+---
+// /pro — professional DJ console (docs/booth/CONTRACTS.md §12).
+// Same shell as booth.astro: HeadCommon brings the codemirror theme +
+// index.css so the grafted CodePanel renders, booth-theme.css supplies the
+// tokens. Audio runs on the same track editors as `/` and `/booth`.
+import HeadCommon from '../components/HeadCommon.astro';
+import '../styles/booth-theme.css';
+import '../styles/compliance.css';
+import '../styles/pro-polish.css';
+import { ProConsole } from '../pro/ProConsole.jsx';
+---
+
+<html lang="zh-CN" class="m-0 dark" data-phase="night" data-mode="pro">
+  <head>
+    <HeadCommon />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#03051A" />
+    <meta name="robots" content="noindex" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>VibeRave · Pro</title>
+    <link rel="stylesheet" href="/fonts/booth/booth-fonts.css" />
+  </head>
+  <body class="m-0">
+    <ProConsole client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--vb-bg-0, #03051a);
+    overscroll-behavior: none;
+  }
+</style>

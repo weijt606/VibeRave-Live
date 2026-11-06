@@ -1,0 +1,21 @@
+---
+// /privacy — booth privacy notice + AI label (CONTRACTS.md §18). Phone-sized
+// for the QR on the booth sign; print it for the A4 sign itself.
+import '../styles/booth-theme.css';
+import '../styles/compliance.css';
+import { PrivacyPage } from '../booth/PrivacyPage.jsx';
+---
+
+<html lang="zh-CN" data-phase="night">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#03051A" />
+    <meta name="robots" content="noindex" />
+    <title>隐私说明 · VibeRave</title>
+    <link rel="stylesheet" href="/fonts/booth/booth-fonts.css" />
+  </head>
+  <body style="margin:0">
+    <PrivacyPage client:only="react" />
+  </body>
+</html>

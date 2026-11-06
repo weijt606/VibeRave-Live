@@ -1,0 +1,43 @@
+# Canonical "lite" profile. `pnpm install:lite` copies this file to
+# pnpm-workspace.yaml and runs pnpm install. Keep it in sync with the
+# default pnpm-workspace.yaml.
+packages:
+  # === Core (required by VibeRave) ===
+  - packages/codemirror
+  - packages/core
+  - packages/draw
+  - packages/edo
+  - packages/hydra
+  - packages/midi
+  - packages/mini
+  - packages/mondo       # mondolang (low-level pattern runtime)
+  - packages/mondough    # @strudel/mondo (Strudel's mondo bridge)
+  - packages/osc
+  - packages/soundfonts
+  - packages/superdough
+  - packages/supradough
+  - packages/tonal
+  - packages/transpiler
+  - packages/vite-plugin-bundle-audioworklet
+  - packages/web
+  - packages/webaudio
+  - packages/xen
+  # === VibeRave's own workspaces ===
+  - services/*
+  - website/
+
+onlyBuiltDependencies:
+  - esbuild
+  - nx
+  - sharp
+  - smart-whisper # install runs node-gyp: whisper.cpp for local STT
+  - vosk-koffi   # postinstall downloads libvosk.dylib for VOSK STT
+
+catalog:
+  "@codemirror/commands": "^6.8.0"
+  "@codemirror/language": "^6.10.8"
+  "@codemirror/lang-javascript": "^6.2.2"
+  "@codemirror/state": "^6.5.1"
+  "@codemirror/view": "^6.36.2"
+  "@codemirror/autocomplete": "^6.18.4"
+  "@codemirror/search": "^6.5.8"

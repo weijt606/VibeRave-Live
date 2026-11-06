@@ -1,0 +1,628 @@
+/* The big screen for strong light (docs/booth/CONTRACTS.md §42.2): an
+   a window behind the crowd, a TV in bright sun.
+
+   Same layout, code wall, wave and interactions as the glow skin
+   (stage.astro); only the paint changes, scoped under
+   `.vb-stage[data-skin='daylight']`. It is the 硬卡 grammar
+   (stage-hardstock.css) moved onto paper, because that grammar is the one
+   that survives glare — and the glow look is the one that does not:
+
+   - sunlight on the glass adds the same veil of light to every pixel, so
+     what survives is luminance contrast, not hue: dark ink on a light
+     canvas keeps its edge (a dark canvas turns milky grey, the
+     reflections show on it, and glows, gradients, glass and 0.5-alpha
+     text simply vanish);
+   - so: one black ink draws every border, shadow and letter on a warm
+     paper canvas; borders are 3 px and shadows are zero-blur ink offsets,
+     the edges that still read when everything else washes out;
+   - colour is a fill behind ink, never a text colour: one hi-vis yellow
+     marks what is live (mode, mic, the gesture firing, the score), and the
+     second emphasis is inversion (paper text on an ink block);
+   - nothing the crowd reads is thinner than weight 500 or lighter than
+     the muted ink (≈ 9:1 on paper);
+   - square corners, Space Grotesk + Space Mono, motion is displacement. */
+
+.vb-stage[data-skin='daylight'] {
+  /* tokens */
+  --dl-paper: #f6f8fa;
+  --dl-ink: #0b0b0b;
+  --dl-card: #ffffff;
+  --dl-tint: #e6ebf0;
+  --dl-muted: #3f3b33;
+  --dl-fill: #ffe100;
+  --dl-line: 3px solid var(--dl-ink);
+  --dl-shadow-sm: 4px 4px 0 var(--dl-ink);
+  --dl-shadow-md: 6px 6px 0 var(--dl-ink);
+  --dl-shadow-lg: 10px 10px 0 var(--dl-ink);
+  /* the stage's own tokens, re-pointed: every "accent text" token is ink */
+  --st-display: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  --st-mono: 'Space Mono', 'JetBrains Mono', monospace;
+  --st-ink: var(--dl-ink);
+  --st-ink-2: #23211c;
+  --st-cap: var(--dl-muted);
+  --st-navy: var(--dl-ink);
+  --st-card: var(--dl-card);
+  --st-gold: var(--dl-ink);
+  --st-lilac: var(--dl-ink);
+  --st-rose: var(--dl-ink);
+  --st-coral: var(--dl-ink);
+  --st-amber: var(--dl-ink);
+  /* read by the canvases (wave, pose, the voice in the pill) */
+  --st-wave: var(--dl-ink);
+  --st-pose: var(--dl-ink);
+  --st-pose-w: 4;
+  --st-mic: var(--dl-ink);
+  --st-mic-faint: rgba(11, 11, 11, 0.18);
+  background: var(--dl-paper);
+  color: var(--dl-ink);
+}
+/* the game layer's glass, re-pointed (styles/game.css sets these on .st-ui) */
+.vb-stage[data-skin='daylight'] .st-ui {
+  --st-hair: rgba(11, 11, 11, 0.16);
+  --st-glass-top: var(--dl-card);
+  --st-glass-bottom: var(--dl-card);
+  --st-glass-edge: var(--dl-ink);
+}
+
+/* ── canvas: paper, a faint ink grid, the code wall as a watermark ──── */
+.vb-stage[data-skin='daylight'] .st-sky {
+  background:
+    linear-gradient(rgba(11, 11, 11, 0.045) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(90deg, rgba(11, 11, 11, 0.045) 1px, transparent 1px) 0 0 / 64px 64px,
+    var(--dl-paper);
+  animation: none;
+  transform: none;
+}
+.vb-stage[data-skin='daylight'] .st-scan {
+  display: none;
+}
+.vb-stage[data-skin='daylight'] .st-codefield,
+.vb-stage[data-skin='daylight'] .st-codefield.is-attract {
+  opacity: 0.06;
+}
+/* one ink for the whole wall: a texture, not a second code card */
+.vb-stage[data-skin='daylight'] .st-cf-pre,
+.vb-stage[data-skin='daylight'] .st-cf-pre span {
+  color: var(--dl-ink);
+}
+/* new code on the wall: no glow (white on paper) and no highlight */
+.vb-stage[data-skin='daylight'] .st-cf-line.is-changed {
+  animation-name: none;
+}
+
+/* ── square corners, no soft shadows or glows, everywhere ───────────── */
+.vb-stage[data-skin='daylight'] *,
+.vb-stage[data-skin='daylight'] *::before,
+.vb-stage[data-skin='daylight'] *::after {
+  border-radius: 0 !important;
+  text-shadow: none;
+}
+
+/* ── header ─────────────────────────────────────────────────────────── */
+.vb-stage[data-skin='daylight'] .st-brand {
+  font-family: var(--st-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.vb-stage[data-skin='daylight'] .st-ailabel .vb-ailabel-tag {
+  color: var(--dl-ink);
+  border: 2px solid var(--dl-ink);
+  font-family: var(--st-mono);
+  font-weight: 700;
+}
+.vb-stage[data-skin='daylight'] .st-ailabel .vb-ailabel-text {
+  color: var(--dl-muted);
+  font-weight: 500;
+}
+.vb-stage[data-skin='daylight'] .st-mode {
+  border: var(--dl-line);
+  background: var(--dl-card);
+  color: var(--dl-ink);
+  box-shadow: var(--dl-shadow-sm);
+  font-family: var(--st-display);
+  transition:
+    transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vb-stage[data-skin='daylight'] .st-mode.is-gesture {
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-mode:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-mode-sub {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.6em;
+  color: inherit;
+  opacity: 1;
+}
+
+/* ── the pill: a white card stamped on paper ────────────────────────── */
+.vb-stage[data-skin='daylight'] .st-pill {
+  background: var(--dl-card);
+  color: var(--dl-ink);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-lg);
+  transition:
+    transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vb-stage[data-skin='daylight'] .st-pill:active,
+.vb-stage[data-skin='daylight'] .st-pill.is-holding {
+  transform: translate(4px, 4px);
+  box-shadow: 2px 2px 0 var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-pill-mic {
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+  border: var(--dl-line);
+}
+.vb-stage[data-skin='daylight'] .st-pill-text,
+.vb-stage[data-skin='daylight'] .st-pill-live-text {
+  font-family: var(--st-display);
+  font-weight: 700;
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-pill.is-hint .st-pill-text {
+  color: var(--dl-muted);
+}
+.vb-stage[data-skin='daylight'] .st-pill.is-error .st-pill-mic {
+  background: var(--dl-ink);
+  color: var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .st-pill.is-listening .st-pill-mic {
+  animation-name: st-dl-listen;
+}
+@keyframes st-dl-listen {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--dl-ink);
+  }
+  50% {
+    box-shadow: 0 0 0 8px var(--dl-ink);
+  }
+}
+/* attract: the call to action is the one yellow block on the screen */
+.vb-stage[data-skin='daylight'] .st-pill.is-attract {
+  background: var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .st-pill.is-attract .st-pill-mic {
+  background: var(--dl-ink);
+  color: var(--dl-fill);
+}
+
+/* ── text column ────────────────────────────────────────────────────── */
+.vb-stage[data-skin='daylight'] .st-status,
+.vb-stage[data-skin='daylight'] .st-explain,
+.vb-stage[data-skin='daylight'] .st-howto {
+  color: var(--st-ink-2);
+  font-weight: 500;
+}
+.vb-stage[data-skin='daylight'] .st-status.is-notice {
+  background: var(--dl-ink);
+  color: var(--dl-paper);
+  font-weight: 700;
+}
+.vb-stage[data-skin='daylight'] .st-howto b {
+  color: var(--dl-ink);
+  font-weight: 800;
+  background: var(--dl-fill);
+  padding: 0 8px;
+}
+.vb-stage[data-skin='daylight'] .st-typer-hint,
+.vb-stage[data-skin='daylight'] .st-turnline,
+.vb-stage[data-skin='daylight'] .st-cap {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dl-muted);
+}
+.vb-stage[data-skin='daylight'] .st-now-style {
+  font-family: var(--st-display);
+  font-weight: 700;
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-now-bpm {
+  font-family: var(--st-mono);
+  color: var(--dl-ink);
+  background: var(--dl-fill);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-sm);
+  padding: 6px 14px;
+}
+.vb-stage[data-skin='daylight'] .st-now-bpm span {
+  opacity: 1;
+}
+.vb-stage[data-skin='daylight'] .st-turn-clock {
+  font-family: var(--st-display);
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-turn.is-warn .st-turn-clock {
+  background: var(--dl-ink);
+  color: var(--dl-fill);
+  padding: 4px 12px;
+}
+.vb-stage[data-skin='daylight'] .st-turn-count,
+.vb-stage[data-skin='daylight'] .st-turn-next {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  color: var(--st-ink-2);
+}
+
+/* ── chips, cards, panels: white blocks with an ink edge ────────────── */
+.vb-stage[data-skin='daylight'] .st-gesture-chip,
+.vb-stage[data-skin='daylight'] .st-gx-shape,
+.vb-stage[data-skin='daylight'] .gm-crowd,
+.vb-stage[data-skin='daylight'] .st-ctl-panel {
+  background: var(--dl-card);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-sm);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-gesture-chip.is-live {
+  background: var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .st-gesture-chip b,
+.vb-stage[data-skin='daylight'] .st-gx-shape b {
+  color: var(--dl-ink);
+  font-family: var(--st-display);
+  font-weight: 700;
+}
+.vb-stage[data-skin='daylight'] .st-gx-shape span,
+.vb-stage[data-skin='daylight'] .st-gesture-chip span {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  color: var(--dl-muted);
+}
+/* a hold fills the chip with yellow from the left, then it lands */
+.vb-stage[data-skin='daylight'] .st-gx-shape.is-holding {
+  border-color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-gx-shape.is-holding::before {
+  background: var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .st-gx-shape.is-fired {
+  background: var(--dl-fill);
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-gx-shape.is-holding b,
+.vb-stage[data-skin='daylight'] .st-gx-shape.is-holding span,
+.vb-stage[data-skin='daylight'] .st-gx-shape.is-fired b,
+.vb-stage[data-skin='daylight'] .st-gx-shape.is-fired span {
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-gx-cam {
+  background: var(--dl-ink);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-lg);
+}
+.vb-stage[data-skin='daylight'] .st-gx-view video {
+  opacity: 1;
+}
+.vb-stage[data-skin='daylight'] .st-gx-line {
+  font-family: var(--st-mono);
+  background: var(--dl-ink);
+  color: var(--dl-paper);
+  border: 2px solid var(--dl-paper);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.vb-stage[data-skin='daylight'] .st-gx-line.has-hands,
+.vb-stage[data-skin='daylight'] .st-gx-line.is-holding {
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+  border-color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-gx-line.is-error,
+.vb-stage[data-skin='daylight'] .st-gx-line.is-replaced {
+  background: var(--dl-ink);
+  color: var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .st-gx-bar {
+  height: 14px;
+  background: var(--dl-card);
+  border: 2px solid var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-gx-bar > span,
+.vb-stage[data-skin='daylight'] .st-gx-bar i {
+  background: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-gx-dial-head,
+.vb-stage[data-skin='daylight'] .st-gx-privacy {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  color: var(--dl-muted);
+}
+.vb-stage[data-skin='daylight'] .st-gx-dial-head b {
+  color: var(--dl-ink);
+  font-family: var(--st-display);
+}
+.vb-stage[data-skin='daylight'] .st-gx-toast {
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-md);
+  font-family: var(--st-display);
+}
+
+/* ── code card: white sheet, dark saturated syntax ──────────────────── */
+.vb-stage[data-skin='daylight'] .st-cc {
+  background: var(--dl-card);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-lg);
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-cc-head {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dl-muted);
+  border-bottom: var(--dl-line);
+  padding-bottom: 12px;
+}
+.vb-stage[data-skin='daylight'] .st-cc-status,
+.vb-stage[data-skin='daylight'] .st-cc-status.is-live {
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-cc-dot {
+  background: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-cc-body {
+  font-weight: 700;
+}
+/* the line that just changed: an ink bar on its left, no highlight
+   (keep the typing reveal — never `animation: none` here) */
+.vb-stage[data-skin='daylight'] .st-cc-line.is-changed {
+  border-left: 6px solid var(--dl-ink);
+  /* the base line is 3 px border + 14 px padding: keep the text in place */
+  padding-left: 11px;
+  background: none;
+}
+.vb-stage[data-skin='daylight'] .tk-str {
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .tk-method {
+  color: #0033c7;
+}
+.vb-stage[data-skin='daylight'] .tk-num {
+  color: #b5001f;
+}
+.vb-stage[data-skin='daylight'] .tk-comment,
+.vb-stage[data-skin='daylight'] .st-cc.is-writing .tk-comment {
+  color: var(--dl-muted);
+}
+.vb-stage[data-skin='daylight'] .st-cc-caret {
+  background: var(--dl-ink);
+}
+
+/* ── the keyboard field ─────────────────────────────────────────────── */
+.vb-stage[data-skin='daylight'] .st-typer {
+  background: var(--dl-card);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-lg);
+  color: var(--dl-ink);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.vb-stage[data-skin='daylight'] .st-typer-cap {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  color: var(--dl-ink);
+  background: var(--dl-fill);
+  border: 2px solid var(--dl-ink);
+  padding: 6px 10px;
+}
+.vb-stage[data-skin='daylight'] .st-typer-input {
+  font-family: var(--st-display);
+  font-weight: 700;
+  color: var(--dl-ink);
+  caret-color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-typer-input::placeholder {
+  color: var(--dl-muted);
+  font-weight: 500;
+}
+.vb-stage[data-skin='daylight'] .st-typer-key,
+.vb-stage[data-skin='daylight'] .st-typer-sent {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  color: var(--dl-muted);
+}
+
+/* ── the set report and the turn clock ──────────────────────────────── */
+.vb-stage[data-skin='daylight'] .gm-st-result {
+  background: var(--dl-card);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-lg);
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-st-result .gm-report {
+  animation: none;
+}
+.vb-stage[data-skin='daylight'] .gm-report-cap,
+.vb-stage[data-skin='daylight'] .gm-stat-k,
+.vb-stage[data-skin='daylight'] .gm-title-dj {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--dl-muted);
+  /* game.css dims these to 0.7: never fainter than the muted ink here */
+  opacity: 1;
+}
+.vb-stage[data-skin='daylight'] .gm-score-num {
+  color: var(--dl-ink);
+  font-weight: 700;
+  text-shadow: 6px 6px 0 var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .gm-rank,
+.vb-stage[data-skin='daylight'] .gm-stat-v {
+  color: var(--dl-ink);
+  font-family: var(--st-display);
+}
+.vb-stage[data-skin='daylight'] .gm-report-sub {
+  color: var(--st-ink-2);
+  font-weight: 500;
+}
+.vb-stage[data-skin='daylight'] .gm-title {
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-sm);
+}
+.vb-stage[data-skin='daylight'] .gm-title-dj {
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-eq span {
+  background: var(--dl-ink);
+  animation: none;
+  transform: none;
+}
+.vb-stage[data-skin='daylight'] .gm-seal {
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-sm);
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-badge {
+  animation: none;
+}
+.vb-stage[data-skin='daylight'] .gm-badge-label {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-st-turn,
+.vb-stage[data-skin='daylight'] .gm-st-clock {
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-st-clock span {
+  color: var(--dl-muted);
+}
+.vb-stage[data-skin='daylight'] .gm-st-last {
+  background: var(--dl-card);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-sm);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-st-last-score b {
+  color: var(--dl-ink);
+  text-shadow: 5px 5px 0 var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .gm-st-last-line.is-title {
+  color: var(--dl-ink);
+  background: var(--dl-fill);
+  padding: 2px 10px;
+}
+.vb-stage[data-skin='daylight'] .gm-st-last-score span,
+.vb-stage[data-skin='daylight'] .gm-st-last-line {
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-crowd.is-peak {
+  background: var(--dl-fill);
+  box-shadow: var(--dl-shadow-md);
+}
+.vb-stage[data-skin='daylight'] .gm-crowd-title {
+  color: var(--dl-ink);
+  font-weight: 700;
+}
+.vb-stage[data-skin='daylight'] .gm-meter,
+.vb-stage[data-skin='daylight'] .gm-bar {
+  background: var(--dl-card);
+  border: 2px solid var(--dl-ink);
+  height: 10px;
+}
+.vb-stage[data-skin='daylight'] .gm-meter > span,
+.vb-stage[data-skin='daylight'] .gm-bar > span {
+  background: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-qr path {
+  fill: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .gm-qr {
+  background: #fff;
+  border: 2px solid var(--dl-ink);
+}
+
+/* ── attract ────────────────────────────────────────────────────────── */
+.vb-stage[data-skin='daylight'] .st-title {
+  font-family: var(--st-display);
+  font-weight: 700;
+  color: var(--dl-ink);
+  text-shadow: 10px 10px 0 var(--dl-fill);
+}
+.vb-stage[data-skin='daylight'] .st-slogan {
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-slogan-en {
+  font-family: var(--st-display);
+  color: var(--dl-muted);
+}
+
+/* ── stage settings + footer ────────────────────────────────────────── */
+.vb-stage[data-skin='daylight'] .st-ctl-gear {
+  background: var(--dl-card);
+  border: var(--dl-line);
+  color: var(--dl-ink);
+  box-shadow: var(--dl-shadow-sm);
+}
+.vb-stage[data-skin='daylight'] .st-ctl-cap {
+  font-family: var(--st-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--dl-muted);
+}
+.vb-stage[data-skin='daylight'] .st-orient-btn {
+  color: var(--dl-ink);
+  font-family: var(--st-display);
+  border: 2px solid transparent;
+}
+.vb-stage[data-skin='daylight'] .st-orient-btn.is-on {
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+  border-color: var(--dl-ink);
+  box-shadow: var(--dl-shadow-sm);
+}
+.vb-stage[data-skin='daylight'] .st-foot {
+  font-family: var(--st-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 22px;
+  color: var(--dl-ink);
+}
+.vb-stage[data-skin='daylight'] .st-foot-right {
+  color: var(--dl-muted);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vb-stage[data-skin='daylight'] .st-mode,
+  .vb-stage[data-skin='daylight'] .st-pill {
+    transition: none;
+  }
+}
+
+.vb-stage[data-skin='daylight'] .gm-comment {
+  color: var(--dl-ink);
+  font-weight: 700;
+}
+
+.vb-stage[data-skin='daylight'] .st-tip {
+  background: var(--dl-fill);
+  color: var(--dl-ink);
+  border: var(--dl-line);
+  box-shadow: var(--dl-shadow-lg);
+}

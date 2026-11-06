@@ -1,0 +1,231 @@
+/* Booth transport + per-band controls (CONTRACTS §2 language: hairlines,
+   no solid-border buttons, ≥44 px touch targets). Kept out of booth-theme.css
+   so the pro page's additions never collide with it. */
+
+.vb-transport {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.vb-transport .vb-btn {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.04em;
+}
+.vb-transport .vb-btn.is-primary {
+  background: linear-gradient(180deg, rgba(110, 235, 195, 0.28), rgba(110, 235, 195, 0.12));
+  color: var(--vb-ink);
+}
+.vb-transport .vb-btn.is-armed {
+  background: linear-gradient(180deg, rgba(255, 92, 147, 0.32), rgba(255, 92, 147, 0.12));
+  color: var(--vb-ink);
+}
+.vb-transport .vb-btn:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+[data-mode='kids'] .vb-transport .vb-btn {
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+/* per-band controls, revealed on the selected row and on hover */
+.vb-row-ctl {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  opacity: 0.45;
+  transition: opacity 0.15s;
+}
+.vb-row.is-sel .vb-row-ctl,
+.vb-row:hover .vb-row-ctl {
+  opacity: 1;
+}
+.vb-row-ctl .vb-icobtn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--vb-ink-2);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  border-radius: 999px;
+}
+.vb-row-ctl .vb-icobtn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--vb-ink);
+}
+.vb-row-ctl .vb-icobtn.is-armed {
+  color: #ff5c93;
+}
+
+/* empty stage */
+.vb-empty {
+  padding: 28px 8px;
+  text-align: center;
+  color: var(--vb-ink-2);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.vb-empty .vb-cap {
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+/* three-way mode toggle keeps the pill; 专业 gets the cool accent */
+.vb-toggle button.is-pro.is-on {
+  background: linear-gradient(180deg, rgba(56, 208, 255, 0.35), rgba(56, 208, 255, 0.14));
+}
+
+/* ── polish: no wrapping, readable on the light day palette ── */
+.vb-transport .vb-btn,
+.vb-toggle button,
+.vb-chip,
+.vb-tile {
+  white-space: nowrap;
+}
+/* band caption: shorter names + ellipsis instead of a hard clip */
+.vb-track-cap {
+  width: auto;
+  min-width: 92px;
+  max-width: 136px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* the transport was drawn for the night palette; on the cream day palette
+   its white-alpha pills vanish. Use ink alpha instead. */
+[data-phase='day'] .vb-transport .vb-btn {
+  background: linear-gradient(180deg, rgba(26, 23, 20, 0.08), rgba(26, 23, 20, 0.04));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 1px 0 rgba(26, 23, 20, 0.05);
+}
+[data-phase='day'] .vb-transport .vb-btn.is-primary {
+  background: linear-gradient(180deg, rgba(110, 235, 195, 0.6), rgba(110, 235, 195, 0.32));
+}
+[data-phase='day'] .vb-transport .vb-btn.is-armed {
+  background: linear-gradient(180deg, rgba(255, 92, 147, 0.5), rgba(255, 92, 147, 0.24));
+}
+[data-phase='day'] .vb-row-ctl .vb-icobtn:hover {
+  background: rgba(26, 23, 20, 0.06);
+}
+/* phone remote links on the day palette were too faint */
+[data-phase='day'] .vb-remote-links .vb-btn {
+  color: var(--vb-ink-2);
+}
+/* phone: the nickname 「改」 button was a 28 px target */
+.vb-remote-nickbtn {
+  min-height: 44px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+/* phone: claiming a band is the primary action — full width, bigger type */
+.vb-remote-claim {
+  width: 100%;
+  min-height: 52px;
+  justify-content: center;
+  font-size: 17px;
+  letter-spacing: 0.04em;
+}
+/* phone: keep the whole remote on one screen on 844 px-tall phones */
+@media (max-height: 860px) {
+  .vb-remote-head {
+    padding-top: 36px;
+  }
+  .vb-xy {
+    height: 168px;
+    margin-top: 14px;
+  }
+  .vb-remote-chips .vb-chip {
+    height: 44px;
+  }
+  .vb-remote-sun {
+    height: 128px;
+  }
+}
+
+/* ── dark / light switch (PhaseToggle.jsx) ── one hairline pill, mono caption */
+.vb-phase-toggle {
+  gap: 6px;
+  min-width: 0;
+  height: 34px;
+  min-height: 34px;
+  padding: 0 12px 0 10px;
+  border-radius: 999px;
+  font-family: var(--vb-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  color: var(--vb-cap);
+  box-shadow: inset 0 0 0 1px var(--vb-toggle-border);
+  background: var(--vb-toggle-bg);
+}
+.vb-phase-toggle:hover {
+  color: var(--vb-ink-1);
+}
+.vb-phase-toggle.is-day,
+.vb-phase-toggle.is-night {
+  color: var(--vb-ink-1);
+}
+.vb-phase-toggle svg {
+  flex: none;
+  opacity: 0.85;
+}
+.vb-pro .vb-phase-toggle {
+  height: 32px;
+  min-height: 32px;
+}
+
+/* ── short screens: the right panel must fit without scrolling ──
+   Laptops are 720–800 px tall where the booth iPad is 834. The 一句话
+   chips lose the most (they were sized for a tablet thumb), then the
+   panel's own rhythm; the style tiles and dials keep their touch size
+   until the very shortest screens. */
+@media (max-height: 880px) {
+  .vb-panel {
+    gap: 20px;
+    padding: 22px 30px;
+  }
+  .vb-section {
+    gap: 11px;
+  }
+  .vb-chips {
+    gap: 8px;
+  }
+  .vb-chip {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+  .vb-panel-foot {
+    gap: 12px;
+  }
+}
+@media (max-height: 780px) {
+  .vb-panel {
+    gap: 16px;
+    padding: 18px 26px;
+  }
+  .vb-chip {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+  .vb-styles {
+    gap: 8px;
+  }
+  .vb-tile {
+    padding: 10px 12px;
+  }
+  .vb-dials {
+    gap: 8px;
+  }
+}

@@ -1,0 +1,34 @@
+---
+// /crowd — audience 打 call page (CONTRACTS.md §21.2).
+// One button over /ws/booth (role crowd); booth Wi-Fi only.
+import '../styles/booth-theme.css';
+import '../styles/compliance.css';
+import '../styles/game.css';
+import { CrowdApp } from '../booth/game/CrowdApp.jsx';
+---
+
+<html lang="zh-CN" data-phase="night" data-mode="adult">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#04061A" />
+    <meta name="robots" content="noindex" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>VibeRave · 打 call</title>
+    <link rel="stylesheet" href="/fonts/booth/booth-fonts.css" />
+  </head>
+  <body>
+    <CrowdApp client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--vb-bg-0, #04061a);
+    overscroll-behavior: none;
+  }
+</style>

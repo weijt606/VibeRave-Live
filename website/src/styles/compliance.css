@@ -1,0 +1,340 @@
+/* AI-content label + privacy sheet (CONTRACTS.md §18). Theme tokens come
+   from booth-theme.css; hairline only, no filled pills. */
+
+.vb-ailabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+.vb-ailabel-tag {
+  font-family: var(--vb-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  padding: 5px 7px 4px;
+  border: 1px solid var(--vb-ink-2);
+  border-radius: 4px;
+  color: var(--vb-ink-2);
+}
+.vb-ailabel-text {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+}
+
+.vb-sources .vb-privacy-btn {
+  margin-left: auto;
+  margin-right: 14px;
+}
+
+.vb-privacy-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(2, 3, 12, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+[data-phase='day'] .vb-privacy-scrim {
+  background: rgba(26, 23, 20, 0.25);
+}
+.vb-privacy-sheet {
+  width: min(560px, 100%);
+  max-height: min(80vh, 760px);
+  overflow-y: auto;
+  padding: 20px 24px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--vb-hair);
+  background: var(--vb-bg-0);
+  color: var(--vb-ink);
+  font-family: var(--vb-body);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  text-align: left;
+}
+.vb-privacy-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.vb-privacy-title {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.vb-privacy-list {
+  margin: 0;
+}
+.vb-privacy-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--vb-hair);
+}
+.vb-privacy-row dt {
+  padding-top: 3px;
+  white-space: normal;
+}
+.vb-privacy-row dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--vb-ink);
+}
+@media (max-width: 480px) {
+  .vb-privacy-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* Gesture page: the camera promise sits under the status line. */
+.vb-gesture-privacy {
+  margin-top: 6px;
+  opacity: 0.85;
+}
+
+/* Remote: the tag rides in the head row. */
+.vb-remote-head .vb-ailabel {
+  position: absolute;
+  top: 52px;
+  right: 26px;
+}
+
+/* Pro: one quiet row under the master fader. */
+.vb-mixer-legal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* /privacy — the page and its printed A4 sign. */
+.vb-privacy-page {
+  min-height: 100vh;
+  padding: 48px 16px 64px;
+  background: var(--vb-bg-0);
+  color: var(--vb-ink);
+  font-family: var(--vb-body);
+}
+.vb-privacy-page-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.vb-privacy-page h1 {
+  margin: 14px 0 6px;
+  font-size: 34px;
+  font-weight: 300;
+}
+.vb-privacy-page .vb-privacy-lead {
+  margin: 0 0 22px;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+}
+.vb-privacy-page h2 {
+  margin: 40px 0 8px;
+  font-size: 22px;
+  font-weight: 300;
+}
+.vb-privacy-page a {
+  color: inherit;
+}
+.vb-privacy-page .vb-privacy-row dd {
+  font-size: 16px;
+}
+@media print {
+  .vb-privacy-page {
+    background: #fff;
+    color: #111;
+    padding: 0;
+    --vb-ink: #111;
+    --vb-ink-2: #444;
+    --vb-cap: #555;
+    --vb-hair: #ccc;
+  }
+}
+.vb-privacy-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 6px;
+  color: var(--vb-ink-2);
+  text-decoration: none;
+}
+
+/* §31 设置 — API keys from the console (BoothSettings.jsx). */
+.vb-settings {
+  width: min(640px, 100%);
+  max-height: min(88vh, 900px);
+}
+.vb-set-status {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0 14px;
+  font-size: 14px;
+}
+.vb-set-status .vb-cap {
+  display: inline-block;
+  min-width: 5.5em;
+}
+.vb-set-mini {
+  margin-left: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--vb-hair);
+  font-size: 13px;
+  color: var(--vb-ink);
+}
+.vb-set-test {
+  font-size: 13px;
+  opacity: 0.85;
+  padding-left: 5.5em;
+}
+.vb-set-test.is-ok {
+  color: #6cd38f;
+}
+.vb-set-test.is-bad {
+  color: #ff8a8a;
+}
+.vb-set-error {
+  margin: 4px 0 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 90, 90, 0.14);
+  font-size: 14px;
+}
+.vb-set-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--vb-hair);
+}
+.vb-set-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+.vb-set-hint {
+  font-size: 12px;
+  font-weight: 300;
+  opacity: 0.65;
+  line-height: 1.5;
+}
+.vb-set-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.vb-set-state {
+  font-size: 13px;
+  opacity: 0.8;
+}
+.vb-set-state.is-saved {
+  color: #6cd38f;
+  opacity: 1;
+}
+.vb-set-inputs {
+  display: flex;
+  gap: 8px;
+}
+.vb-set-inputs input,
+.vb-set-row > input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--vb-hair);
+  background: transparent;
+  color: var(--vb-ink);
+  font: 14px var(--vb-mono, monospace);
+}
+.vb-set-btn {
+  flex: none;
+  min-height: 44px;
+  min-width: 60px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--vb-toggle-on-bg, #fff);
+  color: var(--vb-toggle-on-fg, #000);
+  font-size: 14px;
+}
+.vb-set-btn:disabled {
+  opacity: 0.4;
+}
+.vb-set-btn.is-quiet {
+  background: transparent;
+  color: var(--vb-ink);
+  border: 1px solid var(--vb-hair);
+}
+.vb-set-foot {
+  margin-top: 12px;
+  white-space: normal;
+  line-height: 1.6;
+}
+@media (max-width: 560px) {
+  .vb-set-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* §45 model combinations in the 设置 sheet */
+.vb-set-presets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 0;
+  border-top: 1px solid var(--vb-hair);
+}
+.vb-set-presets > .vb-cap {
+  grid-column: 1 / -1;
+}
+.vb-set-preset {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 56px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--vb-hair);
+  background: transparent;
+  color: var(--vb-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.vb-set-preset b {
+  font-size: 14px;
+  font-weight: 600;
+}
+.vb-set-preset span {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--vb-ink-2);
+}
+.vb-set-preset.is-on {
+  border-color: var(--vb-t1, #6eebc3);
+  box-shadow: inset 0 0 0 1px var(--vb-t1, #6eebc3);
+}
+.vb-set-each {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vb-set-more {
+  margin-top: 8px;
+  min-height: 44px;
+}

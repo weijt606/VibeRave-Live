@@ -1,0 +1,2939 @@
+/* booth-theme.css — booth theme.
+   Tokens per docs/booth/CONTRACTS.md §2. Root carries
+   <html data-phase="day|night" data-mode="adult|kids">.
+   Fonts (Unbounded · Noto Sans SC · Courier Prime) are loaded by a Google
+   Fonts <link> in the page head; the stacks below always carry fallbacks. */
+
+:root {
+  --vb-display: 'Unbounded', 'Noto Sans SC', sans-serif;
+  --vb-body: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', system-ui, sans-serif;
+  --vb-mono: 'Courier Prime', 'Courier New', monospace;
+
+  /* Track light-band colours, fixed order (drums · bass · melody · pad). */
+  --vb-t1: #6eebc3;
+  --vb-t2: #f05ac8;
+  --vb-t3: #38d0ff;
+  --vb-t4: #ffc2e8;
+
+  /* Sensible defaults so a page without data-phase still renders (night). */
+  --vb-bg-0: #03051a;
+  --vb-bg-1: #3a1f45;
+  --vb-ink: #f4f6f8;
+  --vb-ink-2: rgba(244, 246, 248, 0.7);
+  --vb-cap: rgba(244, 246, 248, 0.45);
+  --vb-hair: rgba(244, 246, 248, 0.1);
+  --vb-a1: #36125c;
+  --vb-a2: #7b4dff;
+  --vb-a3: #ffc2e8;
+  --vb-leak-1: rgba(255, 92, 147, 0.62);
+  --vb-leak-2: rgba(123, 77, 255, 0.3);
+  --vb-glass: rgba(5, 8, 26, 0.45);
+}
+
+/* Time-of-day palette. */
+[data-phase='day'] {
+  --vb-bg-0: #f6f8fa;
+  --vb-bg-1: #e9eef3;
+  --vb-ink: #1a1714;
+  --vb-ink-2: rgba(26, 23, 20, 0.7);
+  --vb-cap: rgba(26, 23, 20, 0.45);
+  --vb-hair: rgba(26, 23, 20, 0.08);
+  --vb-a1: #f4f6f8;
+  --vb-a2: #2fb7c9;
+  --vb-a3: #3fa66b;
+  --vb-leak-1: rgba(110, 235, 195, 0.55);
+  --vb-leak-2: rgba(47, 183, 201, 0.5);
+  --vb-glass: rgba(255, 255, 255, 0.55);
+}
+[data-phase='night'] {
+  --vb-bg-0: #03051a;
+  --vb-bg-1: #3a1f45;
+  --vb-ink: #f4f6f8;
+  --vb-ink-2: rgba(244, 246, 248, 0.7);
+  --vb-cap: rgba(244, 246, 248, 0.45);
+  --vb-hair: rgba(244, 246, 248, 0.1);
+  --vb-a1: #36125c;
+  --vb-a2: #7b4dff;
+  --vb-a3: #ffc2e8;
+  --vb-leak-1: rgba(255, 92, 147, 0.62);
+  --vb-leak-2: rgba(123, 77, 255, 0.3);
+  --vb-glass: rgba(5, 8, 26, 0.45);
+}
+
+[data-mode='kids'] {
+  --vb-t1: #2fb7c9;
+  --vb-t2: #3fa66b;
+  --vb-t3: #6eebc3;
+  --vb-t4: #c77dff;
+}
+
+/* Derived component tokens. Dark phases use the frosted "screen" treatment;
+   the day phase (and kids, which forces day) uses the
+   soft white tiles. */
+:root,
+[data-phase='night'] {
+  --vb-blend: screen;
+  --vb-chip-fg: rgba(244, 246, 248, 0.86);
+  --vb-chip-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+  --vb-chip-border: rgba(255, 255, 255, 0.1);
+  --vb-chip-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --vb-chip-on-fg: #ffe9b8;
+  --vb-chip-hot-fg: #ffc9bb;
+  --vb-panel-bg: linear-gradient(180deg, var(--vb-glass), rgba(10, 11, 30, 0.62));
+  --vb-panel-edge: rgba(255, 255, 255, 0.08);
+  --vb-tile-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(20, 18, 42, 0.2));
+  --vb-tile-border: rgba(255, 255, 255, 0.08);
+  --vb-tile-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --vb-toggle-bg: rgba(255, 255, 255, 0.05);
+  --vb-toggle-border: rgba(255, 255, 255, 0.08);
+  --vb-toggle-on-bg: rgba(244, 246, 248, 0.92);
+  --vb-toggle-on-fg: #14122a;
+  --vb-sun-label: #2a1608;
+  --vb-sun-label-2: rgba(42, 22, 8, 0.6);
+  --vb-danger: rgba(255, 92, 147, 0.85);
+  --vb-ok: #3fa66b;
+  --vb-input-line: rgba(244, 246, 248, 0.18);
+  --vb-grain-opacity: 0.3;
+  --vb-grain-blend: overlay;
+}
+[data-phase='day'] {
+  --vb-blend: normal;
+  --vb-chip-fg: #1a1714;
+  --vb-chip-bg: rgba(255, 255, 255, 0.86);
+  --vb-chip-border: transparent;
+  --vb-chip-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 10px 30px rgba(54, 18, 92, 0.07), 0 1px 2px rgba(54, 18, 92, 0.05);
+  --vb-chip-on-fg: #2c1250;
+  --vb-chip-hot-fg: #7a2a12;
+  --vb-panel-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.4), var(--vb-glass));
+  --vb-panel-edge: rgba(255, 255, 255, 0.7);
+  --vb-tile-bg: rgba(255, 255, 255, 0.86);
+  --vb-tile-border: transparent;
+  --vb-tile-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 10px 30px rgba(54, 18, 92, 0.07), 0 1px 2px rgba(54, 18, 92, 0.05);
+  --vb-toggle-bg: rgba(26, 23, 20, 0.05);
+  --vb-toggle-border: rgba(26, 23, 20, 0.06);
+  --vb-toggle-on-bg: #1a1714;
+  --vb-toggle-on-fg: #f4f6f8;
+  --vb-sun-label: #3a2208;
+  --vb-sun-label-2: rgba(58, 34, 8, 0.6);
+  --vb-danger: #c8462a;
+  --vb-ok: #6c9e2e;
+  --vb-input-line: rgba(26, 23, 20, 0.18);
+  --vb-grain-opacity: 0.16;
+  --vb-grain-blend: multiply;
+}
+
+/* ───────────────────────── base ───────────────────────── */
+.vb-root,
+.vb-root * {
+  box-sizing: border-box;
+}
+.vb-root {
+  font-family: var(--vb-body);
+  color: var(--vb-ink);
+  background: var(--vb-bg-0);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+/* :where() keeps this reset at zero specificity so .vb-btn / .vb-chip /
+   .vb-tile font sizes win (they used to lose to `.vb-root button`). */
+:where(.vb-root) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+:where(.vb-root) input {
+  font: inherit;
+  color: inherit;
+}
+
+/* Cap label — Courier Prime, letter-spaced, upper-case. */
+.vb-cap {
+  font-family: var(--vb-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--vb-cap);
+  white-space: nowrap;
+}
+.vb-mono {
+  font-family: var(--vb-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.vb-display {
+  font-family: var(--vb-display);
+}
+.vb-cap.is-strong {
+  color: var(--vb-ink-2);
+}
+.vb-cap.is-warm {
+  color: var(--vb-t1);
+}
+.vb-cap.is-danger {
+  color: var(--vb-danger);
+}
+
+/* Chip — 44px capsule, frosted gradient, hairline border, inset top light. */
+.vb-chip {
+  height: 44px;
+  min-width: 44px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--vb-chip-fg);
+  background: var(--vb-chip-bg);
+  border: 1px solid var(--vb-chip-border);
+  box-shadow: var(--vb-chip-shadow);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+.vb-chip:active {
+  transform: scale(0.97);
+}
+.vb-chip.is-on {
+  color: var(--vb-chip-on-fg);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--vb-a1) 28%, transparent),
+    color-mix(in srgb, var(--vb-a1) 12%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--vb-a1) 40%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 190, 0.35),
+    0 0 28px color-mix(in srgb, var(--vb-a1) 22%, transparent);
+}
+.vb-chip.is-hot {
+  color: var(--vb-chip-hot-fg);
+  font-weight: 500;
+  background: linear-gradient(180deg, rgba(255, 92, 147, 0.26), rgba(255, 92, 147, 0.08));
+  border-color: rgba(255, 92, 147, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 200, 180, 0.3),
+    0 0 28px rgba(255, 92, 147, 0.18);
+}
+[data-phase='day'] .vb-chip.is-on {
+  background: linear-gradient(180deg, #9addf3, #2fb7c9);
+  border-color: transparent;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 12px 30px rgba(47, 183, 201, 0.35);
+}
+[data-phase='day'] .vb-chip.is-hot {
+  background: linear-gradient(180deg, #fbd97a, #6eebc3);
+  border-color: transparent;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 12px 30px rgba(110, 235, 195, 0.4);
+}
+/* Kids chips are bigger, squarer, two per row. */
+[data-mode='kids'] .vb-chip {
+  height: 56px;
+  border-radius: 16px;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+/* Glass panel — frosted, blurred, hairline on the left. */
+.vb-glass {
+  background: var(--vb-panel-bg);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-left: 1px solid var(--vb-panel-edge);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Tile — style tiles, kids genre tiles, stat tiles. */
+.vb-tile {
+  border-radius: 10px;
+  background: var(--vb-tile-bg);
+  border: 1px solid var(--vb-tile-border);
+  box-shadow: var(--vb-tile-shadow);
+  color: var(--vb-ink);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.2s ease;
+}
+.vb-tile:active {
+  transform: scale(0.98);
+}
+.vb-tile.is-on {
+  border-color: color-mix(in srgb, var(--vb-a1) 45%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 190, 0.35),
+    0 10px 30px color-mix(in srgb, var(--vb-a1) 16%, transparent);
+}
+[data-phase='day'] .vb-tile {
+  border-radius: 16px;
+}
+[data-phase='day'] .vb-tile.is-on {
+  background: linear-gradient(180deg, #fbd97a, #6eebc3);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 12px 30px rgba(110, 235, 195, 0.4);
+}
+
+/* Hairline row — track light band. */
+.vb-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 64px;
+  padding: 0 12px 0 16px;
+  border-top: 1px solid var(--vb-hair);
+  position: relative;
+  cursor: pointer;
+}
+.vb-row.is-sel {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--vb-t1) 10%, transparent), transparent 60%);
+}
+.vb-row.is-sel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--vb-t1), var(--vb-t2));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--vb-t1) 60%, transparent);
+}
+[data-phase='day'] .vb-row {
+  height: 66px;
+}
+[data-phase='day'] .vb-row.is-sel {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--vb-t1) 22%, transparent), transparent 60%);
+  border-radius: 12px;
+  border-top-color: transparent;
+}
+[data-phase='day'] .vb-row.is-sel::before {
+  display: none;
+}
+
+.vb-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+.vb-dot.is-lit {
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* Segmented toggle (普通 / 儿童). */
+.vb-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--vb-toggle-bg);
+  border: 1px solid var(--vb-toggle-border);
+}
+.vb-toggle button {
+  height: 38px;
+  min-width: 44px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--vb-ink-2);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.vb-toggle button.is-on {
+  background: var(--vb-toggle-on-bg);
+  color: var(--vb-toggle-on-fg);
+  font-weight: 500;
+}
+
+/* Icon / text button with a 44px hit box. */
+.vb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 6px;
+  font-size: 13px;
+  color: var(--vb-ink-2);
+  border-radius: 10px;
+}
+.vb-btn:active {
+  opacity: 0.7;
+}
+
+/* Text input line (bottom of the right panel). */
+.vb-inputline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  border-bottom: 1px solid var(--vb-input-line);
+}
+.vb-inputline::before {
+  content: '';
+  width: 1px;
+  height: 18px;
+  background: var(--vb-t1);
+  flex: none;
+}
+.vb-inputline input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--vb-ink);
+}
+.vb-inputline input::placeholder {
+  color: var(--vb-ink-2);
+  opacity: 0.7;
+}
+
+/* ─────────────────── console layout ─────────────────── */
+.vb-console {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 76px 1fr;
+  grid-template-columns: minmax(0, 1fr) min(478px, 42vw);
+  grid-template-areas:
+    'top top'
+    'stage panel';
+  background: linear-gradient(
+    180deg,
+    var(--vb-bg-0) 0%,
+    color-mix(in srgb, var(--vb-bg-0) 60%, var(--vb-bg-1)) 48%,
+    var(--vb-bg-1) 100%
+  );
+}
+.vb-leak {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: var(--vb-blend);
+}
+.vb-leak-1 {
+  left: -120px;
+  top: 300px;
+  width: 900px;
+  height: 620px;
+  background: radial-gradient(
+    closest-side,
+    var(--vb-leak-1),
+    color-mix(in srgb, var(--vb-a2) 22%, transparent) 55%,
+    transparent 100%
+  );
+  filter: blur(70px);
+}
+.vb-leak-2 {
+  right: -200px;
+  top: -260px;
+  width: 760px;
+  height: 560px;
+  background: radial-gradient(closest-side, var(--vb-leak-2), transparent 100%);
+  filter: blur(80px);
+}
+.vb-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 70% at 42% 50%, transparent 40%, rgba(3, 4, 14, 0.55) 100%);
+}
+[data-phase='day'] .vb-vignette {
+  display: none;
+}
+.vb-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--vb-grain-opacity);
+  mix-blend-mode: var(--vb-grain-blend);
+}
+
+.vb-topbar {
+  grid-area: top;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+}
+.vb-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.vb-wordmark-text {
+  font-family: var(--vb-display);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+}
+.vb-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.vb-stage {
+  grid-area: stage;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.vb-sunarea {
+  position: relative;
+  height: 400px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.vb-heard {
+  position: absolute;
+  left: 36px;
+  top: 20px;
+  width: min(330px, 46%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2;
+  pointer-events: none;
+}
+.vb-heard-text {
+  font-size: 27px;
+  font-weight: 300;
+  line-height: 1.35;
+  text-wrap: balance;
+  min-height: 2.7em;
+}
+[data-mode='kids'] .vb-heard-text {
+  font-weight: 400;
+}
+.vb-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--vb-ink-2);
+}
+.vb-status .vb-dot {
+  color: var(--vb-t1);
+  background: currentColor;
+}
+.vb-status.is-error .vb-dot {
+  color: var(--vb-danger);
+}
+.vb-status-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* ── scope ─────────────────────────────────────────────────────────────
+   §13: the sun is now a phosphor oscilloscope. The `.vb-sun*` class names
+   stay (nothing else has to move); the backgrounds are gone — every pixel
+   inside the ring is painted by scope/scopeRenderer.mjs on a transparent
+   canvas, so the page's own grain and leaks show through it. */
+.vb-sunbtn {
+  position: relative;
+  flex: none;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: transparent;
+  z-index: 2;
+  touch-action: none;
+  cursor: pointer;
+  outline: 0;
+}
+.vb-sunbtn canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+.vb-sunbtn:focus-visible {
+  outline: 1px solid var(--vb-a2);
+  outline-offset: 6px;
+}
+.vb-sunbtn-labels {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+}
+.vb-sunbtn-label {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--vb-ink-2);
+  transition: color 0.2s ease;
+}
+[data-mode='kids'] .vb-sunbtn-label {
+  font-size: 17px;
+  font-weight: 500;
+}
+.vb-sunbtn-sub {
+  font-family: var(--vb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--vb-cap);
+}
+.vb-sunbtn.is-listening + .vb-sunbtn-labels .vb-sunbtn-label {
+  color: var(--vb-ink);
+  letter-spacing: 0.14em;
+}
+.vb-tapstart {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 372px;
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.vb-tracks {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 28px 0 36px;
+  z-index: 2;
+}
+.vb-tracks-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 16px;
+  flex: none;
+}
+.vb-tracks-actions {
+  display: flex;
+  gap: 22px;
+}
+.vb-tracks-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.vb-track-name {
+  width: 48px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--vb-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: none;
+}
+.vb-row.is-sel .vb-track-name {
+  font-weight: 500;
+  color: var(--vb-ink);
+}
+[data-mode='kids'] .vb-track-name {
+  width: 56px;
+  font-size: 15px;
+  font-weight: 500;
+}
+.vb-track-wave {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  display: block;
+}
+.vb-track-cap {
+  width: 92px;
+  text-align: right;
+  color: var(--vb-ink-2);
+  opacity: 0.8;
+  flex: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vb-mute {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--vb-ink-2);
+  flex: none;
+}
+.vb-mute.is-muted {
+  color: var(--vb-danger);
+}
+
+.vb-panel {
+  grid-area: panel;
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 30px 36px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+[data-mode='kids'] .vb-panel {
+  gap: 28px;
+}
+.vb-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: none;
+}
+/* §30.3 主控 — staff controls: mode (+ pin), music, big-screen orientation */
+.vb-operator {
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--vb-toggle-border);
+}
+.vb-operator-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* §58 flat settings gear: hairline circle + line icon in currentColor (so
+   night and day palettes both follow --vb-ink-2); a ring fills during the
+   1.5 s hold, and the 「长按 1.5 秒打开」 hint sits to its left. */
+.vb-operator-gearwrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vb-operator-gearhint {
+  font-size: 11px;
+  color: var(--vb-ink-2);
+  white-space: nowrap;
+}
+.vb-operator-gear {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--vb-ink-2);
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: color 0.2s;
+}
+.vb-operator-gear:hover,
+.vb-operator-gear.is-holding {
+  color: var(--vb-ink);
+}
+.vb-operator-gearring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.vb-operator-gearring circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-opacity: 0.22;
+  stroke-dasharray: 100 100;
+  stroke-dashoffset: 0;
+}
+.vb-operator-gear.is-holding .vb-operator-gearring circle {
+  stroke-opacity: 0.9;
+  stroke-width: 1.5;
+  animation: vb-gear-hold var(--vb-gear-hold, 1.5s) linear forwards;
+}
+@keyframes vb-gear-hold {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.vb-operator-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.vb-operator-label {
+  flex: none;
+  width: 2.6em;
+  font-size: 13px;
+  color: var(--vb-ink-2);
+}
+.vb-operator .vb-toggle button {
+  height: 44px;
+}
+/* §30.3 五档时长（和五档波形）要挤进一行：窄一点的内边距，命中区仍 44 px 高 */
+.vb-operator .vb-toggle.is-tight button {
+  padding: 0 11px;
+  min-width: 44px;
+  white-space: nowrap;
+}
+.vb-operator-hint {
+  line-height: 1.5;
+  opacity: 0.8;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+/* §40.3 three groups — a cap title, a hairline, rows with one label column */
+.vb-op-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vb-hair);
+}
+.vb-op-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.vb-op-group-head .vb-cap {
+  flex: none;
+  color: var(--vb-t1);
+}
+.vb-op-group-hint {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--vb-ink-2);
+  opacity: 0.75;
+  white-space: normal;
+}
+.vb-operator-chip.is-end {
+  border-color: color-mix(in srgb, var(--vb-a2, #f05ac8) 70%, transparent);
+  color: var(--vb-ink);
+  font-weight: 500;
+}
+/* the waiting loop's volume: a 44 px-tall slider with the value beside it */
+.vb-op-level {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  min-height: 44px;
+}
+.vb-op-level.is-off {
+  opacity: 0.4;
+}
+.vb-op-level input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--vb-t1);
+  cursor: pointer;
+}
+.vb-op-level-v {
+  flex: none;
+  width: 2em;
+  text-align: right;
+  font-family: var(--vb-mono, monospace);
+  font-size: 12px;
+  color: var(--vb-ink-2);
+}
+.vb-operator-warn {
+  opacity: 0.7;
+  font-size: 11px;
+}
+/* §62 BGM: the scene / style picker, 44 px tall like the pills */
+.vb-op-select {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--vb-toggle-border);
+  background: transparent;
+  color: var(--vb-ink);
+  font: inherit;
+  font-size: 13px;
+}
+.vb-op-select option,
+.vb-op-select optgroup {
+  color: #14122a;
+  background: #fff;
+}
+/* §57 音箱: what the current pick cuts, beside the four pills */
+.vb-op-note {
+  font-size: 11px;
+  color: var(--vb-ink-2);
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.vb-operator-chip {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--vb-toggle-border);
+  font-size: 13px;
+  color: var(--vb-ink-2);
+}
+.vb-operator-chip.is-wide {
+  flex: 1;
+}
+.vb-operator-chip:disabled {
+  opacity: 0.4;
+}
+.vb-operator-chip.is-on {
+  background: var(--vb-toggle-on-bg);
+  color: var(--vb-toggle-on-fg);
+  font-weight: 500;
+}
+.vb-operator-chip:active,
+.vb-operator-gear:active {
+  opacity: 0.7;
+}
+/* §22.5 输入 / 手势 — the central button's tap switches it; staff can too */
+.vb-playrow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.vb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+[data-mode='kids'] .vb-chips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vb-shelves {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.vb-shelves::-webkit-scrollbar {
+  display: none;
+}
+.vb-shelf {
+  flex: 1 0 auto;
+  min-height: 44px;
+  /* seven shelves must fit the 405 px rail without scrolling: 7 × (label +
+     2 × 10 px) + 6 × 6 px gap ≈ 380 px (14 px padding clipped 锐舞) */
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--vb-tile-border);
+  color: var(--vb-ink);
+  opacity: 0.7;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  position: relative;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
+}
+.vb-shelf.is-on {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--vb-a1) 55%, transparent);
+}
+/* the shelf that holds what is playing, even when another shelf is open */
+.vb-shelf.has-playing::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--vb-a1);
+}
+.vb-styles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.vb-style {
+  height: 76px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 2px;
+  text-align: left;
+}
+.vb-style-name {
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.15;
+  color: var(--vb-ink);
+  opacity: 0.9;
+  /* 「melbourne bounce」 is wider than a 3-column tile at 1920: wrap at the
+     space (two lines still fit the 76 px tile), never spill out */
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.vb-style.is-on .vb-style-name {
+  font-weight: 500;
+  opacity: 1;
+}
+.vb-style-bpm {
+  font-family: var(--vb-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--vb-ink-2);
+  opacity: 0.7;
+}
+.vb-genres {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.vb-genre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 76px;
+  padding: 14px 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.vb-genre svg {
+  color: var(--vb-ink);
+}
+.vb-genre.is-on svg {
+  color: #3a2208;
+}
+.vb-dials {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.vb-dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 6px;
+  border-radius: 14px;
+  outline: 1.5px solid transparent;
+  outline-offset: -1.5px;
+  transition:
+    outline-color 0.15s,
+    background-color 0.15s;
+  /* §56 un-picked: a finger swipe may scroll the panel, never turns it */
+  touch-action: pan-x pan-y;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.vb-dial.is-armed {
+  outline-color: var(--vb-dial-color, currentColor);
+  background-color: color-mix(in srgb, var(--vb-dial-color, #fff) 12%, transparent);
+  touch-action: none;
+  cursor: grab;
+}
+.vb-dial.is-armed:active {
+  cursor: grabbing;
+}
+.vb-dial.is-armed .vb-dial-label {
+  color: var(--vb-ink);
+}
+.vb-dials-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+.vb-dials-hint {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  text-align: left;
+  color: var(--vb-ink-2);
+  opacity: 0.75;
+}
+.vb-dials-hint.is-armed {
+  color: var(--vb-ink);
+  opacity: 1;
+}
+/* §56 「重置」: transport-pill look, two taps (first one turns it coral) */
+.vb-dials-reset {
+  flex: none;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.04em;
+}
+.vb-dials-reset.is-armed {
+  background: linear-gradient(180deg, rgba(255, 92, 147, 0.32), rgba(255, 92, 147, 0.12));
+  color: var(--vb-ink);
+}
+.vb-dials-reset:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+[data-phase='day'] .vb-dials-reset {
+  background: linear-gradient(180deg, rgba(26, 23, 20, 0.08), rgba(26, 23, 20, 0.04));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 1px 0 rgba(26, 23, 20, 0.05);
+}
+[data-phase='day'] .vb-dials-reset.is-armed {
+  background: linear-gradient(180deg, rgba(255, 92, 147, 0.5), rgba(255, 92, 147, 0.24));
+}
+.vb-dial-label {
+  font-size: 12px;
+  color: var(--vb-ink-2);
+}
+.vb-dial-value {
+  font-family: var(--vb-display);
+  font-weight: 400;
+  font-size: 17px;
+  fill: var(--vb-ink);
+}
+.vb-panel-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: none;
+}
+.vb-sources {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vb-sources-list {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.vb-source {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--vb-ink-2);
+}
+.vb-source.is-off {
+  opacity: 0.55;
+}
+.vb-source .vb-dot {
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+}
+.vb-source.is-on .vb-dot {
+  color: var(--vb-ok);
+  box-shadow: 0 0 8px currentColor;
+}
+.vb-source.is-warm .vb-dot {
+  color: var(--vb-t1);
+  box-shadow: 0 0 8px currentColor;
+}
+.vb-source.is-off .vb-dot {
+  color: var(--vb-cap);
+}
+.vb-stats {
+  display: flex;
+  gap: 10px;
+}
+.vb-stat {
+  flex: 1;
+  padding: 14px 16px;
+  text-align: left;
+}
+.vb-stat-value {
+  font-family: var(--vb-display);
+  font-size: 22px;
+  font-weight: 400;
+}
+.vb-stat-label {
+  font-size: 12px;
+  color: var(--vb-ink-2);
+  margin-top: 4px;
+}
+.vb-instruments {
+  position: absolute;
+  right: 36px;
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+  z-index: 2;
+}
+.vb-instrument {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Code panel overlay (existing CodePanel grafted in). */
+.vb-code {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  color: var(--foreground, #fff);
+  font-family: var(--vb-mono);
+}
+
+/* Error toast. */
+/* §48: the toasts stack bottom-left, so the mic banner never covers an error */
+.vb-toasts {
+  position: absolute;
+  left: 36px;
+  bottom: 24px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 420px;
+  pointer-events: none;
+}
+.vb-toasts:empty {
+  display: none;
+}
+.vb-toast {
+  pointer-events: auto;
+  max-width: 420px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--vb-ink);
+  background: var(--vb-panel-bg);
+  border: 1px solid rgba(255, 92, 147, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.vb-micsetup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-color: rgba(125, 232, 184, 0.6);
+}
+.vb-micsetup.is-error {
+  border-color: rgba(255, 92, 147, 0.7);
+}
+.vb-micsetup-btn {
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Remote shell */
+.vb-remote {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    180deg,
+    var(--vb-bg-0) 0%,
+    color-mix(in srgb, var(--vb-bg-0) 55%, var(--vb-bg-1)) 55%,
+    var(--vb-bg-1) 100%
+  );
+}
+.vb-remote-head {
+  position: relative;
+  padding: 52px 26px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vb-remote-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+.vb-xy {
+  position: relative;
+  margin: 22px 26px 0;
+  height: 200px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  touch-action: none;
+}
+.vb-remote-chips {
+  position: relative;
+  padding: 18px 26px 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.vb-remote-shelves {
+  position: relative;
+  padding: 10px 26px 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.vb-remote-shelves .vb-chip {
+  height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  font-size: 14px;
+}
+.vb-remote-chips .vb-chip {
+  height: 48px;
+  border-radius: 14px;
+  font-size: 16px;
+}
+.vb-remote-foot {
+  position: relative;
+  margin-top: auto;
+  padding: 0 26px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.vb-remote-sun {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  touch-action: none;
+  outline: 0;
+}
+.vb-remote-sun canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+.vb-remote-sunlabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+.vb-remote-who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 24px;
+}
+.vb-remote-nickbtn {
+  padding: 0 4px;
+  min-height: 28px;
+  font-size: 15px;
+  color: var(--vb-ink);
+  gap: 6px;
+}
+.vb-remote-nick {
+  height: 32px;
+  min-width: 96px;
+  padding: 0 10px;
+  font-size: 15px;
+  color: var(--vb-ink);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  outline: none;
+}
+.vb-remote-claim {
+  align-self: flex-start;
+  margin-top: 6px;
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 14px;
+  font-size: 16px;
+}
+.vb-remote-tilt {
+  position: absolute;
+  left: 8px;
+  bottom: 6px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 8px;
+  opacity: 0.7;
+  border-radius: 10px;
+}
+.vb-remote-tilt.is-on {
+  opacity: 1;
+  color: var(--vb-t1);
+}
+.vb-remote-heard {
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--vb-ink);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.vb-remote-ack {
+  font-family: var(--vb-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vb-ink-2);
+  text-align: center;
+}
+.vb-remote-ack.is-error {
+  color: var(--vb-danger, #ff5c93);
+}
+.vb-remote-chips .vb-chip:disabled,
+.vb-remote-links .vb-btn:disabled,
+.vb-remote-claim:disabled {
+  opacity: 0.35;
+}
+.vb-remote-links {
+  display: flex;
+  gap: 28px;
+  height: 44px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+}
+
+/* Gesture skeleton layer on /stage (CONTRACTS.md §11.5). Sits above the sun
+   canvas and below the .st-ui text; the canvas itself is transparent, so the
+   only thing that ever lands here is hairlines and fingertip dots. */
+.vb-stage .st-pose {
+  background: transparent;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vb-chip,
+  .vb-tile,
+  .vb-toggle button {
+    transition: none;
+  }
+}
+
+/* ── gesture ── */
+/* /gesture — the camera page. One framed viewfinder, one big line, and a
+   couple of hairline meters; no solid-border buttons, same as everywhere. */
+.vb-gesture {
+  /* One amber accent (§2). `--vb-t1` is the same amber in every phase, but
+     on the day palette's cream it is a wash rather than a mark, so text and
+     hairlines take a darker cut of it. */
+  --vb-gesture-accent: var(--vb-t1);
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 72px 24px 24px;
+  background: linear-gradient(
+    180deg,
+    var(--vb-bg-0) 0%,
+    color-mix(in srgb, var(--vb-bg-0) 55%, var(--vb-bg-1)) 60%,
+    var(--vb-bg-1) 100%
+  );
+}
+[data-phase='day'] .vb-gesture {
+  --vb-gesture-accent: #9a6412;
+}
+
+.vb-gesture-head {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+  align-items: center;
+}
+.vb-gesture-status {
+  font-family: var(--vb-display);
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  color: var(--vb-ink);
+}
+.vb-gesture-status.is-error {
+  font-size: clamp(20px, 4vw, 28px);
+  color: var(--vb-danger, #ff5c93);
+}
+.vb-gesture-link {
+  opacity: 0.75;
+}
+
+/* Viewfinder: 16:9, hairline frame, four corner ticks, no hard border. */
+.vb-gesture-frame {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--vb-hair);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 60px rgba(0, 0, 0, 0.35);
+}
+.vb-gesture-video,
+.vb-gesture-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.vb-gesture-video {
+  object-fit: cover;
+  opacity: 0.72;
+  filter: saturate(0.85) contrast(1.02);
+}
+.vb-gesture-canvas {
+  pointer-events: none;
+}
+.vb-gesture-corners i {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid var(--vb-gesture-accent);
+  opacity: 0.55;
+}
+.vb-gesture-corners i:nth-child(1) {
+  left: 14px;
+  top: 14px;
+  border-left-width: 1px;
+  border-top-width: 1px;
+}
+.vb-gesture-corners i:nth-child(2) {
+  right: 14px;
+  top: 14px;
+  border-right-width: 1px;
+  border-top-width: 1px;
+}
+.vb-gesture-corners i:nth-child(3) {
+  left: 14px;
+  bottom: 14px;
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+}
+.vb-gesture-corners i:nth-child(4) {
+  right: 14px;
+  bottom: 14px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+.vb-gesture-debug {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-family: var(--vb-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--vb-ink-2);
+  background: var(--vb-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.vb-gesture-readouts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  width: 100%;
+}
+.vb-gesture-readout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vb-gesture-meter {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--vb-hair);
+  overflow: hidden;
+}
+.vb-gesture-meter i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--vb-gesture-accent);
+  opacity: 0.85;
+  transition: width 120ms linear;
+}
+.vb-gesture-value {
+  min-width: 56px;
+  font-family: var(--vb-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--vb-ink-2);
+  text-align: right;
+}
+.vb-gesture-mirror {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+}
+.vb-gesture-mirror[aria-pressed='true'] {
+  color: var(--vb-ink);
+}
+
+@media (max-width: 520px) {
+  .vb-gesture {
+    padding: 28px 16px 20px;
+  }
+  .vb-gesture-readouts {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* ── gesture music strip (§15.2) ──
+   One band under the viewfinder, same width as it, two rows (three when the
+   optional 「或者打字…」 line fits). Nothing here is bigger than the booth's
+   own chips: 44 px targets, 13 px labels, hairlines, one amber accent. */
+.vb-gesture-strip {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px 10px;
+  border-radius: 16px;
+  background: var(--vb-panel-bg);
+  border: 1px solid var(--vb-panel-edge);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+.vb-gesture-strip-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+/* the ring: ScopeButton (host) or a mini scope on the room clock (sensor) */
+.vb-gesture-ring {
+  position: relative;
+  flex: none;
+  width: 78px;
+}
+.vb-gesture-ring .vb-sunarea {
+  height: auto;
+  width: 78px;
+  gap: 3px;
+}
+.vb-gesture-ring .vb-sunbtn {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+}
+.vb-gesture-ring .vb-sunbtn-label {
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.vb-gesture-ring .vb-sunbtn-sub {
+  display: none;
+}
+/* 「点一下任意处开始」 — same copy and behaviour as /booth, laid over the
+   ring so it costs the strip no height and vanishes on the first pointer. */
+.vb-gesture-tapstart {
+  position: absolute;
+  left: 50%;
+  top: 30px;
+  transform: translate(-50%, -50%);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  color: var(--vb-gesture-accent);
+  text-shadow: 0 0 10px var(--vb-bg-0);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.vb-gesture-strip .vb-chip {
+  height: 44px;
+  padding: 0 13px;
+  font-size: 13px;
+  gap: 6px;
+}
+.vb-gesture-transport {
+  flex: none;
+}
+.vb-gesture-chips {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.vb-gesture-chips .vb-chip {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vb-gesture-strip .vb-gesture-mirror {
+  flex: none;
+  margin-left: auto;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+/* row 2 — four readouts on the left, the last 口令 and its result right */
+.vb-gesture-strip-row.is-readouts {
+  gap: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vb-hair);
+}
+.vb-gesture-strip .vb-gesture-readouts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  flex: 1 1 60%;
+  min-width: 0;
+}
+.vb-gesture-strip .vb-gesture-readout {
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+.vb-gesture-strip .vb-gesture-readout .vb-cap {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+.vb-gesture-strip .vb-gesture-meter {
+  height: 4px;
+  min-width: 0;
+}
+/* The un-written readouts fall back to a gesture hint (「双手拉开」), which
+   must never wrap a CJK word one character per line and grow the row. */
+.vb-gesture-strip .vb-gesture-value {
+  min-width: 0;
+  flex: none;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.vb-gesture-strip-status {
+  flex: 1 1 40%;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 300;
+  text-align: right;
+  color: var(--vb-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vb-gesture-strip-status.is-idle {
+  color: var(--vb-cap);
+}
+.vb-gesture-strip-status.is-notice {
+  color: var(--vb-gesture-accent);
+}
+.vb-gesture-strip-status.is-error {
+  color: var(--vb-danger, #ff5c93);
+}
+
+/* row 3 — the optional typing line, only when there is room for it */
+.vb-gesture-strip-row.is-input {
+  gap: 10px;
+  height: 34px;
+  border-bottom: 1px solid var(--vb-input-line);
+}
+.vb-gesture-strip .vb-gesture-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--vb-ink);
+}
+.vb-gesture-strip .vb-gesture-input::placeholder {
+  color: var(--vb-cap);
+}
+
+/* ── gesture legend (§16.3) ──
+   The crib sheet. Twelve rows, no icons: at ≥ 1180 px it stands in its own
+   column to the right of the viewfinder, top-aligned with it; narrower, it
+   drops between the viewfinder and the music strip. */
+.vb-gesture-legend {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px 14px 12px;
+  border-radius: 16px;
+  background: var(--vb-panel-bg);
+  border: 1px solid var(--vb-panel-edge);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+.vb-gesture-legend-title {
+  color: var(--vb-gesture-accent);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vb-hair);
+}
+.vb-gesture-legend-rows {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+}
+.vb-gesture-legend-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  height: 26px;
+  padding: 0 7px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+.vb-gesture-legend-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vb-gesture-legend-how {
+  margin-left: 7px;
+  font-size: 10.5px;
+  color: var(--vb-cap);
+}
+.vb-gesture-legend-action {
+  flex: none;
+  font-family: var(--vb-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--vb-ink-2);
+  white-space: nowrap;
+}
+.vb-gesture-legend-row.is-continuous .vb-gesture-legend-action {
+  color: var(--vb-gesture-accent);
+}
+/* §16.3 — one second of hairline + amber when the row fires. */
+.vb-gesture-legend-row.is-on {
+  border-color: color-mix(in srgb, var(--vb-gesture-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--vb-gesture-accent) 12%, transparent);
+}
+.vb-gesture-legend-row.is-on .vb-gesture-legend-name,
+.vb-gesture-legend-row.is-on .vb-gesture-legend-action {
+  color: var(--vb-ink);
+}
+.vb-gesture-legend-foot {
+  padding-top: 8px;
+  border-top: 1px solid var(--vb-hair);
+  font-size: 10.5px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--vb-cap);
+}
+
+/* The guide never pushes the viewfinder down: below 1180 px the two columns
+   sit side by side under the frame, above the music strip. */
+.vb-gesture {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    'head  head'
+    'frame frame'
+    'lgl   lgr'
+    'strip strip';
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
+  column-gap: 18px;
+  row-gap: 14px;
+}
+.vb-gesture-head {
+  grid-area: head;
+}
+.vb-gesture-frame {
+  grid-area: frame;
+}
+.vb-gesture-legend.is-basic {
+  grid-area: lgl;
+  justify-self: end;
+  max-width: 330px;
+}
+.vb-gesture-legend.is-advanced {
+  grid-area: lgr;
+  justify-self: start;
+  max-width: 330px;
+}
+.vb-gesture-strip {
+  grid-area: strip;
+}
+
+/* Wide enough for two side columns: 基础 left, 取景框 middle, 进阶 right,
+   both columns top-aligned with the frame (§16.3). */
+@media (min-width: 1180px) {
+  .vb-gesture {
+    grid-template-columns: 250px minmax(0, 640px) 250px;
+    grid-template-areas:
+      '.   head  .'
+      'lgl frame lgr'
+      '.   strip .';
+  }
+  .vb-gesture-legend {
+    align-self: start;
+    max-width: 250px;
+  }
+}
+
+/* Top bar — the console's, lifted whole (§2). It floats over the centred
+   stack rather than taking a grid row, so the viewfinder stays optically
+   centred on the page. */
+.vb-gesture-topbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 64px;
+  padding: 0 28px;
+  z-index: 4;
+}
+.vb-gesture-topbar .vb-wordmark {
+  align-items: baseline;
+}
+.vb-gesture-topbar .vb-topbar-right {
+  gap: 20px;
+}
+.vb-gesture-topbar .vb-gesture-link {
+  max-width: 30ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Short laptops: the viewfinder gives way, never the page (§15.2/§16.3).
+   The two steps follow booth-controls.css's 880 / 780 rhythm so a chip on
+   /gesture is never taller than the same chip on /booth. */
+@media (max-height: 880px) {
+  .vb-gesture {
+    padding: 64px 20px 18px;
+    gap: 13px;
+  }
+  .vb-gesture-head,
+  .vb-gesture-frame,
+  .vb-gesture-strip {
+    max-width: 560px;
+  }
+  .vb-gesture-status {
+    font-size: clamp(22px, 4vw, 34px);
+  }
+  .vb-gesture-legend-row {
+    height: 23px;
+  }
+  .vb-gesture-strip .vb-chip {
+    height: 38px;
+    padding: 0 12px;
+  }
+  .vb-gesture-strip .vb-gesture-mirror {
+    min-height: 38px;
+  }
+}
+@media (max-height: 780px) {
+  .vb-gesture {
+    padding: 58px 20px 14px;
+    gap: 10px;
+  }
+  .vb-gesture-topbar {
+    height: 54px;
+  }
+  .vb-gesture-head,
+  .vb-gesture-frame,
+  .vb-gesture-strip {
+    max-width: 520px;
+  }
+  .vb-gesture-status {
+    font-size: clamp(20px, 3vw, 28px);
+  }
+  .vb-gesture-legend {
+    padding: 11px 12px 10px;
+  }
+  .vb-gesture-legend-row {
+    height: 21px;
+  }
+  .vb-gesture-strip {
+    padding: 10px 13px 9px;
+  }
+  .vb-gesture-strip .vb-chip {
+    height: 34px;
+    padding: 0 11px;
+    font-size: 12.5px;
+  }
+  .vb-gesture-strip .vb-gesture-mirror {
+    min-height: 34px;
+    font-size: 12.5px;
+  }
+  .vb-gesture-ring,
+  .vb-gesture-ring .vb-sunarea {
+    width: 66px;
+  }
+  .vb-gesture-ring .vb-sunbtn {
+    width: 52px;
+    height: 52px;
+  }
+  .vb-gesture-tapstart {
+    top: 26px;
+  }
+}
+@media (min-width: 1180px) and (max-height: 880px) {
+  .vb-gesture {
+    grid-template-columns: 240px minmax(0, 560px) 240px;
+  }
+}
+@media (min-width: 1180px) and (max-height: 780px) {
+  .vb-gesture {
+    grid-template-columns: 234px minmax(0, 520px) 234px;
+    column-gap: 16px;
+  }
+}
+/* Below 1180 the guide costs a whole row, so the viewfinder gives way
+   rather than the page scrolling (§16.3). */
+@media (max-width: 1179px) and (max-height: 900px) {
+  .vb-gesture {
+    row-gap: 10px;
+  }
+  .vb-gesture-head,
+  .vb-gesture-frame,
+  .vb-gesture-strip {
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 520px) {
+  .vb-gesture-strip .vb-gesture-readouts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .vb-gesture-strip-row {
+    flex-wrap: wrap;
+  }
+  .vb-gesture-strip-status {
+    flex-basis: 100%;
+    text-align: left;
+  }
+}
+
+/* ── pro ─────────────────────────────────────────────────
+   /pro DJ console (CONTRACTS.md §12.3). Same night palette, hairlines and
+   frosted surfaces as the booth; the layout is a controller: deck A left,
+   mixer centre, deck B right. Nothing here has a solid-border button —
+   pads and knobs use the chip gradient + 1px 10% white hairline.
+   Everything is scoped under .vb-pro so /booth is untouched. */
+.vb-pro {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 64px minmax(0, 1fr);
+  background: linear-gradient(
+    180deg,
+    var(--vb-bg-0) 0%,
+    color-mix(in srgb, var(--vb-bg-0) 72%, var(--vb-bg-1)) 55%,
+    var(--vb-bg-1) 100%
+  );
+}
+.vb-pro-top {
+  gap: 24px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--vb-hair);
+}
+.vb-pro .vb-wordmark {
+  gap: 12px;
+}
+
+/* top bar · tempo block */
+.vb-pro-tempo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+.vb-bpm {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--vb-display);
+  font-weight: 500;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--vb-ink);
+  font-variant-numeric: tabular-nums;
+}
+.vb-pro-bpmstep {
+  display: flex;
+  gap: 2px;
+}
+.vb-pro-bpmstep .vb-btn {
+  min-width: 44px;
+  font-size: 18px;
+  line-height: 1;
+}
+.vb-pro-nudge {
+  display: flex;
+  gap: 4px;
+}
+.vb-reduction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vb-reduction-track {
+  width: 92px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.vb-reduction-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--vb-t1), var(--vb-danger));
+  transition: width 0.12s linear;
+}
+.vb-reduction-value {
+  font-size: 11px;
+  color: var(--vb-cap);
+  min-width: 34px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.vb-pro .vb-toggle button.is-on {
+  color: var(--vb-toggle-on-fg);
+}
+
+/* body: deck · mixer · deck */
+.vb-pro-body {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(288px, 340px) minmax(0, 1fr);
+}
+
+/* ── deck ── */
+.vb-deck {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 18px 22px;
+  scrollbar-width: thin;
+}
+.vb-deck::before {
+  content: '';
+  position: absolute;
+  inset: 8px auto 8px 0;
+  width: 1px;
+  background: transparent;
+}
+.vb-deck.is-focus::before {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--vb-t1) 55%, transparent), transparent);
+}
+.vb-deck[data-side='B'].is-focus::before {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--vb-t3) 55%, transparent), transparent);
+}
+.vb-deck-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.vb-deck-id {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.vb-deck-letter {
+  font-family: var(--vb-display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+}
+.vb-deck-style {
+  font-family: var(--vb-display);
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  opacity: 0.8;
+}
+.vb-deck-meta {
+  display: flex;
+  gap: 12px;
+}
+.vb-deck-wave {
+  width: 100%;
+  height: 84px;
+  display: block;
+  border-bottom: 1px solid var(--vb-hair);
+}
+.vb-deck-explain {
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+  min-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vb-deck-empty {
+  padding: 12px 0;
+}
+
+/* track rows */
+.vb-deck-rows {
+  display: flex;
+  flex-direction: column;
+}
+.vb-deck-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  border-bottom: 1px solid var(--vb-hair);
+  cursor: pointer;
+}
+.vb-deck-row.is-sel .vb-deck-rowname {
+  color: var(--vb-ink);
+  font-weight: 500;
+}
+.vb-deck-rowname {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vb-mini {
+  min-width: 34px;
+  height: 44px;
+  padding: 0 8px;
+  border-radius: 10px;
+  font-family: var(--vb-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--vb-cap);
+}
+.vb-mini.is-on {
+  color: var(--vb-chip-on-fg);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--vb-a1) 30%, transparent),
+    color-mix(in srgb, var(--vb-a1) 12%, transparent)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 236, 190, 0.28);
+}
+.vb-minivol {
+  width: 84px;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* AI line */
+.vb-deck-ai {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vb-pro-sun {
+  position: relative;
+  flex: none;
+  width: 118px;
+  height: 78px;
+}
+.vb-pro-sun .vb-sunarea {
+  height: 100%;
+  gap: 4px;
+}
+.vb-pro-sun .vb-sunbtn {
+  width: 52px;
+  height: 52px;
+  font-size: 12px;
+}
+.vb-pro-sun .vb-sunbtn-label {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.vb-pro-sun .vb-sunbtn-sub {
+  display: none;
+}
+.vb-deck-ai .vb-inputline {
+  flex: 1;
+  min-width: 0;
+}
+
+/* pads */
+.vb-deck-pads {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vb-padrow-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--vb-hair);
+}
+.vb-padgrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.vb-padgrid-fx {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.vb-pad {
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 12px;
+  color: var(--vb-chip-fg);
+  background: var(--vb-chip-bg);
+  border: 1px solid var(--vb-chip-border);
+  box-shadow: var(--vb-chip-shadow);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+.vb-pad:active {
+  transform: scale(0.97);
+}
+.vb-pad.is-on {
+  color: var(--vb-chip-on-fg);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--vb-a1) 30%, transparent),
+    color-mix(in srgb, var(--vb-a1) 12%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--vb-a1) 42%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 190, 0.3),
+    0 0 22px color-mix(in srgb, var(--vb-a1) 22%, transparent);
+}
+.vb-pad-fx.is-on {
+  background: linear-gradient(180deg, rgba(255, 92, 147, 0.26), rgba(255, 92, 147, 0.08));
+  border-color: rgba(255, 92, 147, 0.36);
+  color: var(--vb-chip-hot-fg);
+}
+.vb-pad:disabled {
+  opacity: 0.45;
+}
+.vb-pad-n {
+  font-family: var(--vb-display);
+  font-size: 16px;
+  line-height: 1;
+}
+.vb-pad-sub {
+  font-family: var(--vb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vb-cap);
+}
+.vb-pad.is-on .vb-pad-sub {
+  color: inherit;
+  opacity: 0.85;
+}
+.vb-deck-note {
+  padding-bottom: 2px;
+}
+
+/* code drawer */
+.vb-deck-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--vb-hair);
+  padding-top: 8px;
+}
+.vb-deck-code {
+  height: 240px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--vb-hair);
+}
+.vb-deck-code > div {
+  height: 100%;
+}
+
+/* ── knob ── */
+.vb-knob {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--vb-ink);
+  touch-action: none;
+  cursor: ns-resize;
+  outline: none;
+}
+.vb-knob:focus-visible {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--vb-a2) 60%, transparent));
+}
+.vb-knob.is-off {
+  opacity: 0.4;
+  cursor: default;
+}
+.vb-knob-value {
+  font-family: var(--vb-mono);
+  font-size: 10px;
+  fill: var(--vb-ink-2);
+  letter-spacing: 0.04em;
+}
+.vb-knob-label {
+  font-family: var(--vb-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--vb-cap);
+}
+.vb-knob.is-detent .vb-knob-value {
+  fill: var(--vb-cap);
+}
+
+/* ── mixer ── */
+.vb-mixer {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px 20px;
+  border-left: 1px solid var(--vb-hair);
+  border-right: 1px solid var(--vb-hair);
+}
+.vb-mixer-strips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+.vb-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px;
+  border-radius: 14px;
+  transition: background 0.2s ease;
+}
+.vb-strip.is-focus {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+}
+.vb-strip-head {
+  letter-spacing: 0.28em;
+}
+.vb-strip-eq {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.vb-strip-fader {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  height: 168px;
+}
+
+/* faders */
+.vb-fader {
+  position: relative;
+  touch-action: none;
+  cursor: pointer;
+  outline: none;
+}
+.vb-fader.is-vertical {
+  width: 46px;
+  height: 100%;
+}
+.vb-fader.is-horizontal {
+  width: 100%;
+  height: 46px;
+}
+.vb-fader-track {
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+.vb-fader.is-vertical .vb-fader-track {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+}
+.vb-fader.is-horizontal .vb-fader-track {
+  top: 50%;
+  transform: translateY(-50%);
+  left: 6px;
+  right: 6px;
+  height: 3px;
+}
+.vb-fader-fill {
+  position: absolute;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.08));
+}
+.vb-fader.is-vertical .vb-fader-fill {
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 6px;
+  width: 3px;
+}
+.vb-fader.is-horizontal .vb-fader-fill {
+  top: 50%;
+  transform: translateY(-50%);
+  left: 6px;
+  height: 3px;
+}
+.vb-fader-cap {
+  position: absolute;
+  border-radius: 6px;
+  background: var(--vb-chip-bg);
+  border: 1px solid var(--vb-chip-border);
+  box-shadow: var(--vb-chip-shadow);
+  pointer-events: none;
+}
+.vb-fader.is-vertical .vb-fader-cap {
+  left: 3px;
+  right: 3px;
+  height: 22px;
+  margin-bottom: -11px;
+}
+.vb-fader.is-horizontal .vb-fader-cap {
+  top: 6px;
+  bottom: 6px;
+  width: 22px;
+  margin-left: -11px;
+}
+.vb-fader:focus-visible .vb-fader-cap {
+  box-shadow:
+    var(--vb-chip-shadow),
+    0 0 0 1px color-mix(in srgb, var(--vb-a2) 60%, transparent);
+}
+
+/* level meter */
+.vb-meter {
+  width: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  position: relative;
+}
+.vb-meter-bar {
+  position: absolute;
+  inset: 0;
+  transform-origin: bottom center;
+  transform: scaleY(0.005);
+  opacity: 0.85;
+}
+
+.vb-xfade,
+.vb-master {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vb-hair);
+}
+.vb-xfade-heads {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── MIDI / keys overlays ── */
+.vb-midi,
+.vb-keys {
+  position: absolute;
+  right: 18px;
+  top: 70px;
+  width: min(420px, calc(100vw - 36px));
+  max-height: min(70vh, 620px);
+  overflow: auto;
+  z-index: 8;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--vb-hair);
+}
+.vb-midi-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.vb-select {
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 10px;
+  color: var(--vb-ink-2);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--vb-hair);
+  font-family: var(--vb-mono);
+  font-size: 11px;
+}
+.vb-midi-hint {
+  white-space: normal;
+  line-height: 1.6;
+}
+.vb-midi-list {
+  display: flex;
+  flex-direction: column;
+}
+.vb-midi-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--vb-hair);
+  text-align: left;
+}
+.vb-midi-row.is-learning {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--vb-a2) 22%, transparent), transparent);
+}
+.vb-midi-id {
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+}
+.vb-midi-key {
+  font-size: 11px;
+  color: var(--vb-cap);
+}
+.vb-keys-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.vb-keys-row {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  min-height: 32px;
+  border-bottom: 1px solid var(--vb-hair);
+}
+.vb-keys-row dt {
+  min-width: 96px;
+  font-size: 12px;
+  color: var(--vb-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.vb-keys-row dd {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--vb-ink-2);
+}
+
+/* LEARN indicator */
+.vb-btn.is-learning,
+.vb-learn-flag {
+  color: #ffc9bb;
+}
+.vb-learn-flag {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 9;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 92, 147, 0.3), rgba(255, 92, 147, 0.1));
+  border: 1px solid rgba(255, 92, 147, 0.4);
+  box-shadow: 0 0 30px rgba(255, 92, 147, 0.25);
+  animation: vb-learn-pulse 1.4s ease-in-out infinite;
+}
+@keyframes vb-learn-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* iPad landscape (1194×834) and anything narrower: tighter gutters, the
+   code drawers stay collapsed so all three columns still fit. */
+@media (max-width: 1280px) {
+  .vb-pro {
+    grid-template-rows: 58px minmax(0, 1fr);
+  }
+  .vb-pro-top {
+    gap: 14px;
+    padding: 0 12px;
+  }
+  .vb-pro .vb-wordmark .vb-cap,
+  .vb-pro-nudge {
+    display: none;
+  }
+  .vb-bpm {
+    font-size: 28px;
+  }
+  .vb-pro-body {
+    grid-template-columns: minmax(0, 1fr) minmax(248px, 288px) minmax(0, 1fr);
+  }
+  .vb-deck {
+    padding: 10px 12px 18px;
+    gap: 10px;
+  }
+  .vb-deck-wave {
+    height: 64px;
+  }
+  .vb-pro-sun {
+    width: 96px;
+    height: 68px;
+  }
+  .vb-strip-fader {
+    height: 132px;
+  }
+  .vb-deck-code {
+    height: 190px;
+  }
+}
+@media (max-width: 900px) {
+  .vb-pro-body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    overflow-y: auto;
+  }
+  .vb-mixer {
+    border-left: 0;
+    border-right: 0;
+    border-top: 1px solid var(--vb-hair);
+    border-bottom: 1px solid var(--vb-hair);
+  }
+}
+
+/* pro root: the booth's .vb-topbar carries `grid-area: top`, which has no
+   named area here and would create implicit tracks (the bar ended up at the
+   bottom, the body squashed to 288 px). Pin both regions explicitly. */
+.vb-pro {
+  grid-template-columns: minmax(0, 1fr);
+}
+.vb-pro > .vb-pro-top {
+  grid-area: auto;
+  grid-row: 1;
+  grid-column: 1 / -1;
+}
+.vb-pro > .vb-pro-body {
+  grid-area: auto;
+  grid-row: 2;
+  grid-column: 1 / -1;
+  min-height: 0;
+}
+
+/* Header wordmark: --brand-cap is its cap height (Unbounded caps = 0.75 em). */
+.vb-wordmark {
+  --brand-cap: 12px;
+  align-items: baseline;
+}
+.vb-wordmark > svg {
+  align-self: center;
+}
+.vb-wordmark-text {
+  font-size: calc(var(--brand-cap) / 0.75);
+  line-height: 1;
+}
+.vb-wordmark-cap {
+  margin-left: 0.5em;
+}
+
+/* §59 console overflow pass (2026-10-22): no label may spill out of its
+   button at any console width (checked 768–2560 px, 普通 / 儿童 / English). */
+.vb-btn.vb-cap {
+  flex: none; /* 「隐私说明」「</> 代码」 keep their whole label */
+}
+.vb-genre {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-align: center;
+  line-height: 1.2;
+}
+@media (max-width: 1179px) {
+  .vb-topbar {
+    padding: 0 20px;
+  }
+  .vb-topbar-right {
+    gap: 14px;
+  }
+  .vb-wordmark {
+    gap: 12px;
+    min-width: 0;
+  }
+  /* track bands: the meta caption gives way first, the buttons never do */
+  .vb-row {
+    gap: 10px;
+    padding: 0 8px 0 12px;
+  }
+  .vb-track-cap {
+    width: auto;
+    flex: 0 1 92px;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .vb-style {
+    padding: 10px;
+  }
+  /* seven shelves fit the 405 px rail; a narrower rail wraps them to a
+     second line instead of hiding 国风 / 碎拍 / 锐舞 behind a scroll */
+  .vb-shelves {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .vb-genre {
+    padding: 12px 4px 10px;
+    font-size: 12px;
+  }
+  /* kids 「今天学到的」: three cards share the rail instead of running off it */
+  .vb-stat {
+    min-width: 0;
+    padding: 12px 10px;
+  }
+  .vb-stat-value {
+    font-size: 19px;
+    white-space: nowrap;
+  }
+  .vb-stat > :not(.vb-stat-value) {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+}
+@media (max-width: 900px) {
+  /* portrait tablets: the clock goes, the mode toggle stays whole */
+  .vb-topbar-right > .vb-cap {
+    display: none;
+  }
+}
